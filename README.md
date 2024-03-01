@@ -1,16 +1,14 @@
-# CS250 Class Project
+# CS250 Assignments
 
-For the class project you will make a graphics demo program that showcases all the topics discussed in the course.
+For the class assignments you will make a series of graphics demo programs that showcases all the topics discussed in the course.
 
-The demo will showcase all the topics and should have an intuitive way to pick which topic to view.
-
-Each topic should have applicable sliders and/or modifiers to play around with the parameters which affect the topic.
+Each topic will have applicable sliders and/or modifiers to play around with the parameters which affect the topic.
 
 The topics will be presented and implemented with OpenGL.
 
 This will be a cross platform targeting Windows & Web platforms as a minimum and possibly the Ubuntu & Mac platforms.
 
-Your demo must show off the following topics
+Your topics include but are not limited to:
 
 1. Procedural Geometric Modeling
 	- Plane, Cube, Sphere, Torus, Cylinder, and Cone
@@ -25,7 +23,6 @@ Your demo must show off the following topics
 	- Generating textures and meshes
 8. Hermite Curves / Catmull-Rom Splines
 
-Checkout the [Rubric](docs/Rubric.md) for grading details.
 
 ## How to Build and Run
 
