@@ -84,6 +84,28 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
         GL::TexImage2D - https://docs.gl/es3/glTexImage2D
         GL::BindTexture - unbind
     */
+
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
+        GL::TextureStorage2D(texture_handle, 1, GL_RGBA, width, height);
+        GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    else
+    {
+        GL::GenTextures(1, &texture_handle);
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+        GL::TexParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TexParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TexParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GL::TexParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        GL::TexImage2D(texture_handle, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+	}
+    
     return true;
 }
 

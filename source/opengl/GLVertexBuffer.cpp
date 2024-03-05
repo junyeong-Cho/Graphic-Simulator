@@ -26,7 +26,19 @@ GLVertexBuffer::GLVertexBuffer(GLsizei size_in_bytes)
             GL::BindBuffer - https://docs.gl/es3/glBindBuffer
             GL::BufferData - https://docs.gl/es3/glBufferData
             GL::BindBuffer - (unbind)
-    */
+    */ 
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::CreateBuffers(1, &buffer_handle);
+        GL::NamedBufferStorage(buffer_handle, size, no_data, GL_DYNAMIC_STORAGE_BIT);
+    }
+    else
+    {
+        GL::GenBuffers(1, &buffer_handle);
+        GL::BindBuffer(GL_ARRAY_BUFFER, buffer_handle);
+        GL::BufferData(GL_ARRAY_BUFFER, size, no_data, GL_DYNAMIC_DRAW);
+        GL::BindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 }
 
 GLVertexBuffer::~GLVertexBuffer()
@@ -52,6 +64,7 @@ GLVertexBuffer& GLVertexBuffer::operator=(GLVertexBuffer&& temp) noexcept
 void GLVertexBuffer::Use(bool bind) const
 {
     // TODO GL::BindBuffer - https://docs.gl/es3/glBindBuffer
+    GL::BindBuffer(GL_ARRAY_BUFFER, bind ? buffer_handle : 0);
 }
 
 void GLVertexBuffer::send_buffer_data_to_gpu(const void* data, GLsizei size_bytes, GLsizei starting_offset) const
@@ -64,4 +77,12 @@ void GLVertexBuffer::send_buffer_data_to_gpu(const void* data, GLsizei size_byte
             GL::BufferSubData - https://docs.gl/es3/glBufferSubData
             GL::BindBuffer - unbind
     */
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::NamedBufferStorage(buffer_handle, size, data, GL_DYNAMIC_STORAGE_BIT);
+    }
+    else
+    {
+
+    }
 }
