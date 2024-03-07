@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author TODO Your Name
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology

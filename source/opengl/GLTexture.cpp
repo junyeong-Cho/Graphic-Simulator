@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author TODO Your Name
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -118,6 +118,16 @@ void GLTexture::UseForSlot(unsigned texture_unit) const noexcept
         GL::ActiveTexture - https://docs.gl/es3/glActiveTexture
         GL::BindTexture - https://docs.gl/es3/glBindTexture
     */
+    
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::BindTextureUnit(texture_unit, texture_handle);
+    }
+    else
+    {
+        GL::ActiveTexture(texture_handle);
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+    }
 }
 
 void GLTexture::SetFiltering(Filtering how_to_filter) noexcept
@@ -135,6 +145,18 @@ void GLTexture::SetFiltering(Filtering how_to_filter) noexcept
         GL::TexParameteri - set min filter https://docs.gl/es3/glTexParameter
         GL::TexParameteri -  set max filter
     */
+
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
+    }
+    else
+    {
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+        GL::TexParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
+        GL::TexParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
+    }
 }
 
 void GLTexture::SetWrapping(Wrapping how_to_wrap, Coordinate coord) noexcept
@@ -173,11 +195,30 @@ void GLTexture::SetWrapping(Wrapping how_to_wrap, Coordinate coord) noexcept
             GL::TexParameteri - https://docs.gl/es3/glTexParameter
 
     */
+
+    GLenum gl_wrap_mode = (how_to_wrap == Wrapping::Repeat) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        for (int i = 0; i < num_coords; i++)
+        {
+            GL::TextureParameteri(texture_handle, coords_to_set[i], static_cast<int>(gl_wrap_mode));
+        }
+    }
+    else
+    {
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+        for (int i = 0; i < num_coords; i++)
+        {
+            GL::TexParameteri(GL_TEXTURE_2D, coords_to_set[i], static_cast<int>(gl_wrap_mode));
+        }
+    }
 }
 
 void GLTexture::delete_texture() noexcept
 {
     // TODO GL::DeleteTextures - https://docs.gl/es3/glDeleteTextures
+    GL::DeleteTextures(1, &texture_handle);
     texture_handle = 0;
     width          = 0;
     height         = 0;

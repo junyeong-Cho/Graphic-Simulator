@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author TODO Your Name
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -30,12 +30,20 @@ namespace
         */
         IF_CAN_DO_OPENGL(4, 5)
         {
-
-        }
+			unsigned buffer_handle;
+			GL::CreateBuffers(1, &buffer_handle);
+			GL::NamedBufferStorage(buffer_handle, size_bytes, data, 0);
+			return buffer_handle;
+		}
         else
         {
-
-        }
+			unsigned buffer_handle;
+			GL::GenBuffers(1, &buffer_handle);
+			GL::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_handle);
+			GL::BufferData(GL_ELEMENT_ARRAY_BUFFER, size_bytes, data, GL_STATIC_DRAW);
+			GL::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			return buffer_handle;
+		}
 
     }
 }

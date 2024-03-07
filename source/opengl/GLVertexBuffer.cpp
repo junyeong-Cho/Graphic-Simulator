@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author TODO Your Name
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -44,6 +44,7 @@ GLVertexBuffer::GLVertexBuffer(GLsizei size_in_bytes)
 GLVertexBuffer::~GLVertexBuffer()
 {
     // TODO GL::DeleteBuffers - https://docs.gl/es3/glDeleteBuffers
+    GL::DeleteBuffers(1, &buffer_handle);
 }
 
 GLVertexBuffer::GLVertexBuffer(GLVertexBuffer&& temp) noexcept
@@ -83,6 +84,8 @@ void GLVertexBuffer::send_buffer_data_to_gpu(const void* data, GLsizei size_byte
     }
     else
     {
-
+        GL::BindBuffer(GL_ARRAY_BUFFER, buffer_handle);
+        GL::BufferSubData(GL_ARRAY_BUFFER, starting_offset, size_bytes, data);
+        GL::BindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
