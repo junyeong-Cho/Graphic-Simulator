@@ -55,7 +55,6 @@ try
     demos::Demos starting_demo = demos::Demos::None;
     if (argc > 1)
         starting_demo = demos::string_to_demo(argv[1]);
-        // TODO Change Title to your name
     window::Application application("CS250 Junyeong Cho Assignments", starting_demo);
 #if !defined(__EMSCRIPTEN__)
     while (!application.IsDone())

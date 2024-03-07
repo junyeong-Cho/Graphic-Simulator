@@ -9,10 +9,12 @@
 #include "D01HelloQuad.hpp"
 
 #include "environment/Environment.hpp"
+#include "environment/Input.hpp"
 #include "opengl/GL.hpp"
 #include <array>
 #include <imgui.h>
 #include <span>
+#include <window/Application.hpp>
 
 namespace
 {
@@ -98,12 +100,15 @@ namespace demos
 
         quadMesh.AddVertexBuffer(std::move(buffer), { position, color, texture_coordinates });
         quadMesh.SetIndexBuffer(std::move(index_buffer));
+
+
         assert(shader.IsValidWithVertexArrayObject(quadMesh.GetHandle()));
     }
 
     void D01HelloQuad::Update()
     {
         assetReloader.Update();
+       
     }
 
     void D01HelloQuad::Draw() const
@@ -112,6 +117,7 @@ namespace demos
         shader.Use();
         paintMeTexture.UseForSlot(0);
         shader.SendUniform("uTex2d", 0);
+        shader.SendUniform("uTime", static_cast<float>(environment::ElapsedTime));
         quadMesh.Use();
         GLDrawIndexed(quadMesh);
     }

@@ -65,59 +65,46 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
     delete_texture();
     width  = image_width;
     height = image_height;
-    /* TODO
-    if can do opengl 4.5
-        GL::CreateTextures - https://docs.gl/gl4/glCreateTextures
-        GL::TextureStorage2D  - GL_RGBA8 https://docs.gl/gl4/glTexStorage2D
-        GL::TextureSubImage2D - GL_RGBA GL_UNSIGNED_BYTE https://docs.gl/gl4/glTexSubImage2D
-        GL::TextureParameteri - set min filter https://docs.gl/gl4/glTexParameter
-        GL::TextureParameteri - set mag filter
-        GL::TextureParameteri - set wrap s 
-        GL::TextureParameteri - set wrap t
-    else
-        GL::GenTextures - https://docs.gl/es3/glGenTextures
-        GL::BindTexture - https://docs.gl/es3/glBindTexture
-        GL::TexParameteri - set min filter - https://docs.gl/es3/glTexParameter
-        GL::TexParameteri - set mag filter
-        GL::TexParameteri - set wrap s 
-        GL::TexParameteri - set wrap t
-        GL::TexImage2D - https://docs.gl/es3/glTexImage2D
-        GL::BindTexture - unbind
-    */
 
     IF_CAN_DO_OPENGL(4, 5)
     {
-        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
-        GL::TextureStorage2D(texture_handle, 1, GL_RGBA, width, height);
-        GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);                                            // 텍스처 생성
+        GL::TextureStorage2D(texture_handle, 1, GL_RGBA8, width, height);                                 // 텍스처 스토리지 설정
+        GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors); // 텍스처 데이터 복사
+
+        // 필터링 모드 설정
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // 래핑 모드 설정
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
     else
     {
-        GL::GenTextures(1, &texture_handle);
-        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
-        GL::TexParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        GL::TexParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        GL::TexParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        GL::TexParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        GL::TexImage2D(texture_handle, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
-	}
-    
+        GL::GenTextures(1, &texture_handle);            
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle); // 생성된 텍스처를 바인드
+
+        // 텍스처 이미지 지정
+        GL::TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+
+        // 필터링 모드 설정
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        // 래핑 모드 설정
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        // 텍스처 바인딩 해제
+        GL::BindTexture(GL_TEXTURE_2D, 0);
+    }
+
     return true;
 }
 
 void GLTexture::UseForSlot(unsigned texture_unit) const noexcept
 {
-    /* TODO
-    if can do opengl 4.5
-        GL::BindTextureUnit - https://docs.gl/gl4/glBindTextureUnit
-    else
-        GL::ActiveTexture - https://docs.gl/es3/glActiveTexture
-        GL::BindTexture - https://docs.gl/es3/glBindTexture
-    */
     
     IF_CAN_DO_OPENGL(4, 5)
     {
@@ -125,7 +112,7 @@ void GLTexture::UseForSlot(unsigned texture_unit) const noexcept
     }
     else
     {
-        GL::ActiveTexture(texture_handle);
+        GL::ActiveTexture(GL_TEXTURE0 + texture_unit);
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
     }
 }
@@ -136,16 +123,7 @@ void GLTexture::SetFiltering(Filtering how_to_filter) noexcept
         return;
 
     filtering = how_to_filter;
-    /* TODO
-    if can do opengl 4.5
-        GL::TextureParameteri - set min filter https://docs.gl/gl4/glTexParameter
-        GL::TextureParameteri -  set max filter
-    else
-        GL::BindTexture
-        GL::TexParameteri - set min filter https://docs.gl/es3/glTexParameter
-        GL::TexParameteri -  set max filter
-    */
-
+   
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
@@ -185,16 +163,6 @@ void GLTexture::SetWrapping(Wrapping how_to_wrap, Coordinate coord) noexcept
             break;
     }
 
-    /* TODO
-    if can do opengl 4.5
-        for each coordinate
-            GL::TextureParameteri - https://docs.gl/gl4/glTexParameter
-    else
-        GL::BindTexture - https://docs.gl/es3/glBindTexture
-        for each coordinate
-            GL::TexParameteri - https://docs.gl/es3/glTexParameter
-
-    */
 
     GLenum gl_wrap_mode = (how_to_wrap == Wrapping::Repeat) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
@@ -217,7 +185,6 @@ void GLTexture::SetWrapping(Wrapping how_to_wrap, Coordinate coord) noexcept
 
 void GLTexture::delete_texture() noexcept
 {
-    // TODO GL::DeleteTextures - https://docs.gl/es3/glDeleteTextures
     GL::DeleteTextures(1, &texture_handle);
     texture_handle = 0;
     width          = 0;

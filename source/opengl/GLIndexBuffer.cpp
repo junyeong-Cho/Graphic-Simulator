@@ -17,17 +17,6 @@ namespace
 {
     unsigned create_indices_buffer(const void* data, GLsizei size_bytes)
     {
-        /*
-        TODO
-        if can do opengl 4.5
-            GL::CreateBuffers      - https://docs.gl/gl4/glCreateBuffers
-            GL::NamedBufferStorage - https://docs.gl/gl4/glBufferStorage
-        else
-             GL::GenBuffers - https://docs.gl/es3/glGenBuffers
-             GL::BindBuffer - bind newly created buffer https://docs.gl/es3/glBindBuffer
-             GL::BufferData - https://docs.gl/es3/glBufferData
-             GL::BindBuffer - unbind newly created buffer
-        */
         IF_CAN_DO_OPENGL(4, 5)
         {
 			unsigned buffer_handle;
@@ -68,7 +57,6 @@ GLIndexBuffer::GLIndexBuffer(std::span<const unsigned char> indices)
 
 GLIndexBuffer::~GLIndexBuffer()
 {
-    // TODO use GL::DeleteBuffers - https://docs.gl/es3/glDeleteBuffers
     GL::DeleteBuffers(1, &indices_handle);
 }
 
@@ -91,6 +79,5 @@ GLIndexBuffer& GLIndexBuffer::operator=(GLIndexBuffer&& temp) noexcept
 
 void GLIndexBuffer::Use(bool bind) const
 {
-    // TODO use GL::BindBuffer - https://docs.gl/es3/glBindBuffer
     GL::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, bind ? indices_handle : 0);
 }
