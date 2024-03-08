@@ -19,8 +19,7 @@ GLTexture::~GLTexture() noexcept
     delete_texture();
 }
 
-GLTexture::GLTexture(GLTexture&& other) noexcept
-    : texture_handle(other.texture_handle), width(other.width), height(other.height)
+GLTexture::GLTexture(GLTexture&& other) noexcept : texture_handle(other.texture_handle), width(other.width), height(other.height)
 {
     other.texture_handle = 0;
     other.width          = 0;
@@ -51,8 +50,7 @@ bool GLTexture::LoadFromFileImage(std::filesystem::path image_filepath, bool fli
     int           files_channels_count  = 0;
     constexpr int desired_channel_count = 4;
     stbi_set_flip_vertically_on_load(flip_vertical);
-    RGBA* const rgba_pixels =
-        reinterpret_cast<RGBA*>(stbi_load(image_filepath.string().c_str(), &pixel_width, &pixel_height, &files_channels_count, desired_channel_count));
+    RGBA* const rgba_pixels = reinterpret_cast<RGBA*>(stbi_load(image_filepath.string().c_str(), &pixel_width, &pixel_height, &files_channels_count, desired_channel_count));
     if (rgba_pixels == nullptr)
         return false;
     const bool result = LoadFromMemory(pixel_width, pixel_height, rgba_pixels);
@@ -68,35 +66,29 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
 
     IF_CAN_DO_OPENGL(4, 5)
     {
-        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);                                            // 텍스처 생성
-        GL::TextureStorage2D(texture_handle, 1, GL_RGBA8, width, height);                                 // 텍스처 스토리지 설정
-        GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors); // 텍스처 데이터 복사
+        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);                                            
+        GL::TextureStorage2D(texture_handle, 1, GL_RGBA8, width, height);                                 
+        GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors); 
 
-        // 필터링 모드 설정
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // 래핑 모드 설정
         GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
     else
     {
-        GL::GenTextures(1, &texture_handle);            
-        GL::BindTexture(GL_TEXTURE_2D, texture_handle); // 생성된 텍스처를 바인드
+        GL::GenTextures(1, &texture_handle);
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
 
-        // 텍스처 이미지 지정
         GL::TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
 
-        // 필터링 모드 설정
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // 래핑 모드 설정
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        // 텍스처 바인딩 해제
         GL::BindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -105,7 +97,6 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
 
 void GLTexture::UseForSlot(unsigned texture_unit) const noexcept
 {
-    
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::BindTextureUnit(texture_unit, texture_handle);
@@ -123,7 +114,7 @@ void GLTexture::SetFiltering(Filtering how_to_filter) noexcept
         return;
 
     filtering = how_to_filter;
-   
+
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);

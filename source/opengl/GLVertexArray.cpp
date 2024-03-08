@@ -81,7 +81,9 @@ void GLVertexArray::AddVertexBuffer(GLVertexBuffer&& vertex_buffer, std::initial
             GL::BindVertexArray(vertex_array_handle);
 			GL::BindBuffer(GL_ARRAY_BUFFER, buffer_handle);
 			GL::EnableVertexAttribArray(attribute.vertex_layout_location);
-			GL::VertexAttribPointer(attribute.vertex_layout_location, attribute.component_dimension, attribute.component_type, attribute.normalized, attribute.stride, reinterpret_cast<void*>(attribute.relative_offset));   
+            GL::VertexAttribPointer(
+                attribute.vertex_layout_location, attribute.component_dimension, attribute.component_type, attribute.normalized, attribute.stride,
+                reinterpret_cast<void*>(static_cast<std::uintptr_t>(attribute.relative_offset)));
         }
 
     }
