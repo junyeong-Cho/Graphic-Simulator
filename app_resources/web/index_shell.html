@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="icon" href="https://www.digipen.edu/themes/custom/digipen_future/favicon.ico"
         type="image/vnd.microsoft.icon" />
     <title>CS250 DigiPen Computer Graphics</title>
@@ -50,10 +50,6 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUi
             background-color: #00000000;
         }
 
-        div.emscripten_border {
-            border: 1px solid black;
-        }
-
         canvas.emscripten {
             border: 0px none;
             background: transparent;
@@ -64,64 +60,6 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUi
             margin: 10px;
             padding: 10px;
             color: #000000;
-        }
-
-        .fade-in {
-            animation: fadeIn ease 0.1s;
-            -webkit-animation: fadeIn ease 0.1s;
-            -moz-animation: fadeIn ease 0.1s;
-            -o-animation: fadeIn ease 0.1s;
-            -ms-animation: fadeIn ease 0.1s;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        @-moz-keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        @-webkit-keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        @-o-keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        @-ms-keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
         }
     </style>
 </head>
@@ -135,9 +73,7 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUi
                 Loading - please wait ..
             </div>
         </div>
-        <div id="container_canvas" hidden>
-            <canvas class="emscripten" id="canvas"></canvas>
-        </div>
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     </div>
 
     <script type='text/javascript'>
@@ -154,7 +90,6 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUi
             Module.setWindowSize(x, y);
         }
 
-        // periodically check if the native application has passed some data to the JS layer
         window.setInterval(function () {
             if (isInitialized == false) return;
 
@@ -190,24 +125,14 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUi
                     window.focus();
                 }, false);
             });
-        }
 
-        function doInit() {
             if (isInitialized == false) {
-                //var someParam = findGetParameter('p') || 0;
                 updateWindowSize();
                 isInitialized = true;
             }
-
             {
                 var status = document.getElementById("description");
                 status.hidden = true;
-            }
-
-            {
-                var canvas = document.getElementById("container_canvas");
-                canvas.hidden = false;
-                canvas.classList.add("fade-in");
             }
         }
 
@@ -223,21 +148,18 @@ PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUi
             return []
         }
 
-
         var Module = {
             arguments: buildCommandLineArguments(),
             preRun: [(function () { })],
             postRun: [(function () {
                 if (failedToInitialize) return;
                 init();
-                doInit();
             })],
             canvas: (function () {
                 var canvas = document.getElementById('canvas');
                 canvas.addEventListener("webglcontextlost", function (e) {
                     alert('WebGL context lost. You will need to reload the page.'); e.preventDefault();
                 }, false);
-
                 return canvas;
             })(),
             print: function (text) {
