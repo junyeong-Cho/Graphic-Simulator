@@ -1,6 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -17,6 +18,7 @@ namespace demos
     {
         None,
         HelloQuad,
+        ProceduralMeshes,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

@@ -1,6 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -525,7 +526,8 @@ namespace window
             };
 
             std::vector supported_demos = {
-                NameType{       "Hello Quad",        Demos::HelloQuad}
+                NameType{       "Hello Quad",        Demos::HelloQuad},
+                NameType{"Procedural Meshes",        Demos::ProceduralMeshes}
             };
 
             for (const auto& [name, demo] : supported_demos)

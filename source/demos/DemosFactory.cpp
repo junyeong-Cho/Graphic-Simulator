@@ -1,6 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -8,6 +9,7 @@
 #include "DemosFactory.hpp"
 
 #include "D01HelloQuad.hpp"
+#include "D02ProceduralMeshes.hpp"
 
 
 #include <algorithm>
@@ -23,7 +25,8 @@ namespace demos
         switch (the_demo)
         {
             case Demos::None:
-            case Demos::HelloQuad: return new D01HelloQuad();
+            case Demos::HelloQuad:        return new D01HelloQuad();
+            case Demos::ProceduralMeshes: return new D02ProceduralMeshes();
             default: throw std::runtime_error{ "Tried to create a demo we don't have yet...\n" }; break;
         }
     }
@@ -31,7 +34,8 @@ namespace demos
     Demos string_to_demo(std::string_view str) noexcept
     {
         static const std::unordered_map<std::string_view, Demos> demo_map{
-            { "hello",        Demos::HelloQuad}
+            { "hello",        Demos::HelloQuad},
+            {"meshes",        Demos::ProceduralMeshes}
         };
         const auto to_lower = [](std::string_view s)
         {

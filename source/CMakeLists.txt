@@ -6,12 +6,16 @@ set(SOURCE_CODE
     assets/Reloader.hpp assets/Reloader.cpp
 
     demos/D01HelloQuad.hpp demos/D01HelloQuad.cpp
+    demos/D02ProceduralMeshes.hpp demos/D02ProceduralMeshes.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
     environment/Environment.hpp
     environment/Input.hpp
     environment/OpenGL.hpp
+
+    graphics/Material.hpp graphics/Material.cpp
+    graphics/Mesh.hpp graphics/Mesh.cpp
 
     opengl/GL.hpp opengl/GL.cpp
     opengl/GLHandle.hpp
