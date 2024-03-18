@@ -123,8 +123,8 @@ void GLTexture::SetFiltering(Filtering how_to_filter) noexcept
     else
     {
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
-        GL::TexParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
-        GL::TexParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (filtering == Filtering::NearestPixel) ? GL_NEAREST : GL_LINEAR);
     }
 }
 
