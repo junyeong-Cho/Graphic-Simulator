@@ -12,6 +12,9 @@ uniform mat4 uProjection;
 
 void main()
 {
-    gl_Position                 = vec4(aVertexPosition, 1.0);
+	// Multiply the position by the matrix.
+	gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
+
+	// Pass the texcoord to the fragment shader.
     vTextureCoordinates         = aVertexTextureCoordinates;
 }
