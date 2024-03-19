@@ -527,7 +527,8 @@ namespace window
 
             std::vector supported_demos = {
                 NameType{       "Hello Quad",        Demos::HelloQuad},
-                NameType{"Procedural Meshes",        Demos::ProceduralMeshes}
+                NameType{"Procedural Meshes",        Demos::ProceduralMeshes},
+                NameType{              "Fog",        Demos::Fog},
             };
 
             for (const auto& [name, demo] : supported_demos)

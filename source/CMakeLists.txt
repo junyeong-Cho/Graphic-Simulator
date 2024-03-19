@@ -7,6 +7,7 @@ set(SOURCE_CODE
 
     demos/D01HelloQuad.hpp demos/D01HelloQuad.cpp
     demos/D02ProceduralMeshes.hpp demos/D02ProceduralMeshes.cpp
+    demos/D03Fog.hpp demos/D03Fog.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
@@ -16,6 +17,7 @@ set(SOURCE_CODE
 
     graphics/Material.hpp graphics/Material.cpp
     graphics/Mesh.hpp graphics/Mesh.cpp
+    graphics/MathHelper.hpp
 
     opengl/GL.hpp opengl/GL.cpp
     opengl/GLHandle.hpp
