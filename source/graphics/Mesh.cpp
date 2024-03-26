@@ -287,6 +287,92 @@ namespace graphics
     }
 
 
+    // https://prideout.net/blog/old/blog/index.html@p=22.html
+    glm::vec3 evaluate_trefoil(float row, float col)
+    {
+        constexpr float TwoPi     = 2.0f * graphics::PI;
+        constexpr float a         = 0.5f;
+        constexpr float b         = 0.3f;
+        constexpr float c         = 0.5f;
+        constexpr float d         = 0.1f;
+        const float     u         = row * 2 * TwoPi;
+        const float     v         = col * TwoPi;
+        const float     cos_1_5_u = std::cos(1.5f * u);
+        const float     r         = a + b * cos_1_5_u;
+        const float     cos_u     = std::cos(u);
+        const float     sin_u     = std::sin(u);
+        const float     x         = r * cos_u;
+        const float     y         = r * sin_u;
+        const float     sin_1_5_u = std::sin(1.5f * u);
+        const float     z         = c * sin_1_5_u;
+
+        glm::vec3 dv;
+        dv.x = -1.5f * b * sin_1_5_u * cos_u - (a + b * cos_1_5_u) * sin_u;
+        dv.y = -1.5f * b * sin_1_5_u * sin_u + (a + b * cos_1_5_u) * cos_u;
+        dv.z = 1.5f * c * cos_1_5_u;
+
+        const glm::vec3 q   = glm::normalize(dv);
+        const glm::vec3 qvn = glm::normalize(glm::vec3(q.y, -q.x, 0));
+        const glm::vec3 ww  = glm::cross(q, qvn);
+
+        const float cos_v = std::cos(v);
+        const float sin_v = std::sin(v);
+        glm::vec3   range;
+        range.x = x + d * (qvn.x * cos_v + ww.x * sin_v);
+        range.y = y + d * (qvn.y * cos_v + ww.y * sin_v);
+        range.z = z + d * ww.z * sin_v;
+        return range;
+    }
+
+    Geometry create_trefoil(int stacks, int slices)
+    {
+        std::vector<MeshVertex> vertices;
+        const size_t            slices_st    = gsl::narrow<size_t>(slices);
+        const size_t            num_vertices = slices_st * gsl::narrow<size_t>(stacks);
+        vertices.reserve(num_vertices);
+        const auto stacks_f = gsl::narrow<float>(stacks);
+        const auto slices_f = gsl::narrow<float>(slices);
+        glm::vec3  center{};
+        glm::vec3  min = evaluate_trefoil(0, 0);
+        glm::vec3  max = min;
+        for (int stack = 0; stack <= stacks; ++stack)
+        {
+            const float row = static_cast<float>(stack) / stacks_f;
+            for (int slice = 0; slice <= slices; ++slice)
+            {
+                const float     col = static_cast<float>(slice) / slices_f;
+                constexpr float E   = 0.01f;
+                const glm::vec3 p   = evaluate_trefoil(row, col);
+                const glm::vec3 u   = evaluate_trefoil(row + E, col) - p;
+                const glm::vec3 v   = evaluate_trefoil(row, col + E) - p;
+                const glm::vec3 n   = glm::normalize(glm::cross(v, u));
+                const glm::vec2 uv{ col, row };
+                vertices.emplace_back(p, n, uv);
+
+                min.x = (p.x < min.x) ? p.x : min.x;
+                min.y = (p.y < min.y) ? p.y : min.x;
+                min.z = (p.z < min.z) ? p.z : min.z;
+
+                max.x = (p.x > max.x) ? p.x : max.x;
+                max.y = (p.y > max.y) ? p.y : max.x;
+                max.z = (p.z > max.z) ? p.z : max.z;
+
+                center += p;
+            }
+        }
+        center /= static_cast<float>(num_vertices);
+        const auto diff  = max - min;
+        const auto scale = std::max(std::max(diff.x, diff.y), diff.z);
+        for (auto& v : vertices)
+        {
+            v.position -= center;
+            v.position /= scale;
+        }
+        auto indices = build_index_buffer(stacks, slices);
+        return Geometry{ std::move(vertices), std::move(indices) };
+    }
+
+
 
     void describe_meshvertex_layout(GLAttributeLayout& position, GLAttributeLayout& normal, GLAttributeLayout& uv)
     {

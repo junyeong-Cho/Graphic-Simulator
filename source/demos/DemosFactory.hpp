@@ -20,6 +20,7 @@ namespace demos
         HelloQuad,
         ProceduralMeshes,
         Fog,
+        ToonShading,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

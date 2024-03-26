@@ -8,6 +8,7 @@ set(SOURCE_CODE
     demos/D01HelloQuad.hpp demos/D01HelloQuad.cpp
     demos/D02ProceduralMeshes.hpp demos/D02ProceduralMeshes.cpp
     demos/D03Fog.hpp demos/D03Fog.cpp
+    demos/D04ToonShading.hpp demos/D04ToonSHading.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 

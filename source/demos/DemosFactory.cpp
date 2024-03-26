@@ -11,6 +11,7 @@
 #include "D01HelloQuad.hpp"
 #include "D02ProceduralMeshes.hpp"
 #include "D03Fog.hpp"
+#include "D04ToonShading.hpp"
 
 
 #include <algorithm>
@@ -29,6 +30,7 @@ namespace demos
             case Demos::HelloQuad:        return new D01HelloQuad();
             case Demos::ProceduralMeshes: return new D02ProceduralMeshes();
             case Demos::Fog:              return new D03Fog();
+            case Demos::ToonShading:      return new D04ToonShading();
             default: throw std::runtime_error{ "Tried to create a demo we don't have yet...\n" }; break;
         }
     }

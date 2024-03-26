@@ -529,6 +529,7 @@ namespace window
                 NameType{       "Hello Quad",        Demos::HelloQuad},
                 NameType{"Procedural Meshes",        Demos::ProceduralMeshes},
                 NameType{              "Fog",        Demos::Fog},
+                NameType{     "Toon Shading",        Demos::ToonShading},
             };
 
             for (const auto& [name, demo] : supported_demos)

@@ -56,6 +56,7 @@ namespace graphics
     Geometry create_torus(int stacks, int slices, float start_angle = 0, float end_angle = 2.0f * PI);
     Geometry create_cylinder(int stacks, int slices);
     Geometry create_cone(int stacks, int slices);
+    Geometry create_trefoil(int stacks, int slices);
     SubMesh  to_submesh_as_triangles(const Geometry& geometry, Material* material = nullptr);
     SubMesh  to_submesh_as_lines(const Geometry& geometry, Material* material = nullptr);
 }
