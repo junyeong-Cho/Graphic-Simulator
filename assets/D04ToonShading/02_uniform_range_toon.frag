@@ -32,7 +32,7 @@ void main()
     sf = pow(sf, uShininess);
 
 
-        float chunkSize = 1.0 / float(1- uNumDiffuseChunks);
+        float chunkSize = -(1.0 / float(uNumDiffuseChunks));
         df = floor(df / chunkSize) * chunkSize;
 
     // Optionally apply anti-aliasing to the quantized diffuse

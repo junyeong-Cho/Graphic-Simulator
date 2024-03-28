@@ -10,46 +10,68 @@ in vec3 vPosition;
 uniform vec3      uFogColor;
 uniform float     uFogNear;
 uniform float     uFogFar;
+
 uniform vec3      uDiffuse;
 uniform vec3      uAmbient;
 uniform float     uShininess;
 uniform vec3      uSpecularColor;
 uniform vec3      uLightDirection;
+
 uniform sampler2D uGradientTexture;
 uniform bool      uEnableAntiAliasing;
-uniform int       uImageWidth;
+uniform int       uImageWidth; 
 
 void main()
 {
-    vec3 normalizedLightDirection = normalize(uLightDirection);
-    vec3 normal = normalize(EyespaceNormal);
-    
-    float diff = max(dot(normal, normalizedLightDirection), 0.0);
-    
-    vec3 ambient = uAmbient * uDiffuse;
-    vec3 diffuse = diff * uDiffuse;
-    
-    vec3 viewDir = normalize(-vPosition); // Assuming the eye is at the origin
+    vec3 N = normalize(EyespaceNormal);
+    vec3 L = normalize(uLightDirection);
+    vec3 E = vec3(0, 0, 1);
+    vec3 H = normalize(L + E);
 
-    vec3 reflectDir = reflect(-normalizedLightDirection, normal);
     
-    float specAngle = max(dot(viewDir, reflectDir), 0.0);
-    float specularComponent = pow(specAngle, uShininess);
+    float df = max(0.0, dot(N, L));
+    
+    float sf = max(0.0, dot(N, H));
+    sf = pow(sf, uShininess);
+
     
 
-    vec3 specular = specularComponent * uSpecularColor;
+    float texCoordX = (vPosition.x + 1.0) * 0.5;
+    vec4 textureColor = texture(uGradientTexture, vec2(texCoordX, 0.5));
+
     
-    vec3 lighting = ambient + diffuse + specular;
+    float brightness = dot(textureColor.rgb, vec3(0.299, 0.587, 0.114));
+
     
-    float lightingFactor = length(lighting); 
-    vec2 textureCoord = vec2(lightingFactor, 0.5); 
+    float numSteps = -(float(uImageWidth) * brightness); 
+    df = floor(df * numSteps) / numSteps;
+
     
-    vec4 textureColor = texture(uGradientTexture, textureCoord);
+    if (uEnableAntiAliasing) 
+    {
+        float Edf = fwidth(df);
+        df = df + 0.5 * Edf;
+    }
+
+    
+    float Esf = fwidth(sf);
+    if (uEnableAntiAliasing) {
+        if (sf > 0.5 - Esf && sf < 0.5 + Esf) {
+            sf = smoothstep(0.5 - Esf, 0.5 + Esf, sf);
+        } else {
+            sf = step(0.5, sf);
+        }
+    }
+
+    
+    vec3 color = uAmbient + df * Diffuse + sf * uSpecularColor;
+
     
     float fogDistance = length(vPosition);
     float fogAmount = smoothstep(uFogNear, uFogFar, fogDistance);
+
     
-    vec4 finalColor = mix(textureColor, vec4(uFogColor, 1.0), fogAmount);
-    
+    vec4 finalColor = mix(vec4(color, 1.0) * textureColor, vec4(uFogColor, 1.0), fogAmount);
+
     fFragmentColor = finalColor;
 }
