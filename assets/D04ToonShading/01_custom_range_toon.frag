@@ -42,7 +42,7 @@ void main() {
 
     // Apply anti-aliasing technique to diffuse lighting
     float Edf = fwidth(df);
-        if (df > uLevel1 - Edf && df < uLevel1 + Edf) df = stepmix(uLevel1, uLevel2, Edf, df);
+        if (df > uLevel1 - Edf && df < uLevel1 + Edf) df      = stepmix(uLevel1, uLevel2, Edf, df);
         else if (df > uLevel2 - Edf && df < uLevel2 + Edf) df = stepmix(uLevel2, uLevel3, Edf, df);
         else if (df > uLevel3 - Edf && df < uLevel3 + Edf) df = stepmix(uLevel3, uMax, Edf, df);
         else if (df < uLevel1) df = 0.0;

@@ -31,12 +31,9 @@ void main()
     float sf = max(0.0, dot(N, H));
     sf = pow(sf, uShininess);
 
-    // Quantize diffuse factor
-    if (uNumDiffuseChunks > 1) 
-    {
-        float chunkSize = 1.0 / float(uNumDiffuseChunks - 1);
+
+        float chunkSize = 1.0 / float(1- uNumDiffuseChunks);
         df = floor(df / chunkSize) * chunkSize;
-    }
 
     // Optionally apply anti-aliasing to the quantized diffuse
     if (uEnableAntiAliasing) 
