@@ -8,9 +8,11 @@ uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjection;
 
+
 uniform vec3 uDiffuse;
 
 uniform mat3 uNormalMatrix;
+
 
 out vec3 EyespaceNormal;
 out vec3 Diffuse;
