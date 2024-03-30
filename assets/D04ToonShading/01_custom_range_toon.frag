@@ -23,47 +23,53 @@ uniform float uLevel3;
 uniform float uMax;
 uniform bool  uEnableAntiAliasing;
 
-// Additional function for smooth transition
 float stepmix(float edge0, float edge1, float E, float x) 
 {
-    float T = clamp(0.5 * (x - edge0 + E) / E, 0.0, 1.0);
+    float T = clamp(0.5 * (x - edge0) / E, 0.0, 1.0);
     return mix(edge0, edge1, T);
 }
 
 void main() {
-    vec3 N = normalize(EyespaceNormal);
-    vec3 L = normalize(uLightDirection);
-    vec3 E = vec3(0, 0, 1);
-    vec3 H = normalize(L + E);
+    vec3 N   = normalize(EyespaceNormal);
+    vec3 L   = normalize(uLightDirection);
+    vec3 Eye = vec3(0, 0, 1);
+    vec3 H   = normalize(L + Eye);
 
     float df = max(0.0, dot(N, L));
     float sf = max(0.0, dot(N, H));
     sf = pow(sf, uShininess);
 
-    // Apply anti-aliasing technique to diffuse lighting
+    
     float Edf = fwidth(df);
-        if (df > uLevel1 - Edf && df < uLevel1 + Edf) df      = stepmix(uLevel1, uLevel2, Edf, df);
-        else if (df > uLevel2 - Edf && df < uLevel2 + Edf) df = stepmix(uLevel2, uLevel3, Edf, df);
-        else if (df > uLevel3 - Edf && df < uLevel3 + Edf) df = stepmix(uLevel3, uMax, Edf, df);
-        else if (df < uLevel1) df = 0.0;
-        else if (df < uLevel2) df = uLevel2;
-        else if (df < uLevel3) df = uLevel3;
-        else df = uMax;
 
 
-    // Apply anti-aliasing technique to specular lighting
-    float Esf = fwidth(sf);
+    
+    if (df > uLevel1 - Edf && df < uLevel1 + Edf) df      = stepmix(uLevel1, uLevel2, Edf, df);
+    else if (df > uLevel2 - Edf && df < uLevel2 + Edf) df = stepmix(uLevel2, uLevel3, Edf, df);
+    else if (df > uLevel3 - Edf && df < uLevel3 + Edf) df = stepmix(uLevel3, uMax, Edf, df);
+    else if (df < uLevel1) df = uLevel1;
+    else if (df < uLevel2) df = uLevel2;
+    else if (df < uLevel3) df = uLevel3;
+    else df = uMax;
+
+    // Specular anti-aliasing
     if (uEnableAntiAliasing) 
     {
-        if (sf > 0.5 - Esf && sf < 0.5 + Esf) 
+        Edf = fwidth(sf);
+        if (sf > 0.5 - Edf && sf < 0.5 + Edf) 
         {
-            sf = smoothstep(0.5 - Esf, 0.5 + Esf, sf);
+            sf = smoothstep(0.5 - Edf, 0.5 + Edf, sf);
         } 
         else 
         {
             sf = step(0.5, sf);
         }
+    } 
+    else 
+    {
+        sf = step(0.5, sf);
     }
+
 
     vec3 color = uAmbient + df * Diffuse + sf * uSpecularColor;
 
