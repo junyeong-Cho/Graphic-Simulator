@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author TODO Your Name
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -262,6 +262,8 @@ namespace demos
             disable Polygon Offset Fill
             set viewport back to the saved settings from the `viewport` field
         */
+
+        
     }
 
     void D05ShadowMapping::renderToScreen() const

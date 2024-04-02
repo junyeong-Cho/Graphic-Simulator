@@ -33,6 +33,7 @@ GLFrameBuffer& GLFrameBuffer::operator=(GLFrameBuffer&& other) noexcept
 void GLFrameBuffer::Use(bool bind) const
 {
     // TODO GL::BindFramebuffer - https://docs.gl/es3/glBindFramebuffer
+    GL::BindFramebuffer(bind ? GL_FRAMEBUFFER : GL_FRAMEBUFFER, frameBufferHandle);
 }
 
 void GLFrameBuffer::LoadWithSpecification(Specification spec)
@@ -93,6 +94,37 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
             GL::CheckFramebufferStatus - https://docs.gl/es3/glCheckFramebufferStatus
             GL::BindFramebuffer - unbind framebuffer
     */
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::CreateFramebuffers(1, &frameBufferHandle);
+        if (spec.DepthFormat != GLTexture::DepthComponentSize::None)
+		{
+			GL::NamedFramebufferTexture(frameBufferHandle, GL_DEPTH_ATTACHMENT, depthTexture.GetHandle(), 0);
+		}
+        if (spec.ColorFormat != ColorComponent::None)
+        {
+            GL::NamedFramebufferTexture(frameBufferHandle, GL_COLOR_ATTACHMENT0, colorTexture.GetHandle(), 0);
+        }
+
+        GL::NamedFramebufferDrawBuffers(frameBufferHandle, 1, draw_buffers);
+        status_result = GL::CheckNamedFramebufferStatus(frameBufferHandle, GL_FRAMEBUFFER);
+    }
+    else
+    {
+        GL::GenFramebuffers(1, &frameBufferHandle);
+		GL::BindFramebuffer(GL_FRAMEBUFFER, frameBufferHandle);
+		if (spec.DepthFormat != GLTexture::DepthComponentSize::None)
+		{
+			GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture.GetHandle(), 0);
+		}
+		if (spec.ColorFormat != ColorComponent::None)
+		{
+			GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture.GetHandle(), 0);
+		}
+		GL::DrawBuffers(1, draw_buffers);
+		status_result = GL::CheckFramebufferStatus(GL_FRAMEBUFFER);
+		GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
     if (status_result != GL_FRAMEBUFFER_COMPLETE)
     {
@@ -113,5 +145,6 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
 void GLFrameBuffer::delete_resources() noexcept
 {
     // TODO GL::DeleteFramebuffers - https://docs.gl/es3/glDeleteFramebuffers
+    GL::DeleteFramebuffers(1, &frameBufferHandle);
     frameBufferHandle = 0;
 }

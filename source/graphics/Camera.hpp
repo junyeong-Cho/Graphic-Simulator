@@ -67,10 +67,26 @@ namespace graphics
         {
             // TODO fill in column vectors of the View Matrix (world space to camera space)
             //      You do not need any external functions except for doing a dot product
-            const glm::vec4 column_1{};
-            const glm::vec4 column_2{};
-            const glm::vec4 column_3{};
-            const glm::vec4 column_4{};
+            const glm::vec4 column_1
+            {
+                Right.x, Up.x, Back.x, 0
+			};
+
+            const glm::vec4 column_2
+            { 
+                Right.y, Up.y, Back.y, 0 
+            };
+
+            const glm::vec4 column_3
+            { 
+                Right.z, Up.z, Back.z, 0 
+            };
+
+            const glm::vec4 column_4
+            { 
+                -glm::dot(Right, Eye), -glm::dot(Up, Eye), -glm::dot(Back, Eye), 1 
+            };
+
             return glm::mat4{ column_1, column_2, column_3, column_4 };
         }
 
@@ -78,10 +94,26 @@ namespace graphics
         {
             // TODO fill in column vectors of the Inverse of the View Matrix (camera space to world space)
             //      DO NOT invoke any external functions like glm::inverse. It is not needed!
-            const glm::vec4 column_1{};
-            const glm::vec4 column_2{};
-            const glm::vec4 column_3{};
-            const glm::vec4 column_4{};
+            const glm::vec4 column_1
+			{
+				Right.x, Right.y, Right.z, 0
+			};
+
+			const glm::vec4 column_2
+			{
+				Up.x, Up.y, Up.z, 0
+			};
+
+            const glm::vec4 column_3
+            {
+				Back.x, Back.y, Back.z, 0
+			};
+            
+            const glm::vec4 column_4
+            {
+					Eye.x, Eye.y, Eye.z, 1
+			};
+
             return glm::mat4{ column_1, column_2, column_3, column_4 };
         }
     };
