@@ -9,7 +9,7 @@ in vec3 vPositionInViewSpace;
 in vec4 vPositionInShadowSpace;
 
 // TODO use the shadpw map
-// uniform sampler2DShadow uShadowMap;
+ uniform sampler2DShadow uShadowMap;
 
 uniform vec3  uFogColor;
 uniform float uFogDensity;
@@ -32,15 +32,35 @@ void main()
     vec3 diffuse    = nl * uDiffuse;
 
     // TODO get shadow value from doing a projection texture lookup
+    vec3 projCoords = vPositionInShadowSpace.xyz / vPositionInShadowSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    shadow = texture(uShadowMap, projCoords);
+
+
     float shadow = 1.0;
     //TODO if not uDoShadowBehindLight and z position in shadow space is less than 0
         // hardcode shadow value to 1 to make full light behind the light source
+    if(!uDoShadowBehindLight && vPositionInShadowSpace.z < 0.0)
+	{
+		shadow = 1.0;
+	}
+	else
+	{
+		shadow = texture(uShadowMap, vPositionInShadowSpace);
+	}
     
 
     // If the fragment is in shadow, use ambient light only.
+    if(shadow == 0.0)
+	{
+		fFragmentColor = vec4(uAmbient, 1.0f);
+		return;
+	}
+
     vec3        color       = uAmbient + shadow * (diffuse + spec * uSpecularColor);
 
     // TODO apply fogdensity
-    float       fogAmount   = 0.0f;
+    float       fogAmount   = uFogDensity * length(vPositionInViewSpace);
+    //float       fogAmount   = 0.0f;
     fFragmentColor          = vec4(mix(color, uFogColor, fogAmount), 1.0f);
 }

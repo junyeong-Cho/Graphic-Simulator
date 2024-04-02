@@ -29,6 +29,7 @@ set(SOURCE_CODE
     opengl/GLTexture.hpp opengl/GLTexture.cpp
     opengl/GLVertexArray.hpp opengl/GLVertexArray.cpp
     opengl/GLVertexBuffer.hpp opengl/GLVertexBuffer.cpp
+    opengl/GLFrameBuffer.hpp opengl/GLFrameBuffer.cpp
 
     util/FPS.hpp
     util/Timer.hpp

@@ -68,39 +68,53 @@ bool GLTexture::LoadAsDepthTexture(int image_width, int image_height, DepthCompo
         GL::BindTexture     - unbind texture
     */
 
+
     IF_CAN_DO_OPENGL(4, 5)
     {
-			GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
-			GL::TextureStorage2D(texture_handle, 1, GL_DEPTH_COMPONENT, width, height);
-			GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			GL::TextureParameteri(texture_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-			GL::TextureParameteri(texture_handle, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
+        // Use bit_depth as the format for the depth component
+        GL::TextureStorage2D(texture_handle, 1, bit_depth, width, height);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
     }
     else
     {
         GL::GenTextures(1, &texture_handle);
-		GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
 
         IF_CAN_DO_OPENGL(4, 2)
         {
-			GL::TexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT, width, height);
-		}
-		else
-		{
-			GL::TexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
-		}
+            // Use bit_depth as the format for the depth component
+            GL::TexStorage2D(GL_TEXTURE_2D, 1, bit_depth, width, height);
+        }
+        else
+        {
+            // For GL::TexImage2D, bit_depth does not directly apply.
+            // Instead, choose an appropriate internal format based on bit_depth.
+            GLenum internalFormat;
+            switch (bit_depth)
+            {
+                case DepthBits16: internalFormat = GL_DEPTH_COMPONENT16; break;
+                case DepthBits24: internalFormat = GL_DEPTH_COMPONENT24; break;
+                case DepthBits32: internalFormat = GL_DEPTH_COMPONENT32; break;
+                case DepthBits32F: internalFormat = GL_DEPTH_COMPONENT32F; break;
+                default: internalFormat = GL_DEPTH_COMPONENT; // Fallback to a default value
+            }
+            GL::TexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
+        }
 
-		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
 
-		GL::BindTexture(GL_TEXTURE_2D, 0);
+        GL::BindTexture(GL_TEXTURE_2D, 0);
     }
 
     return true;

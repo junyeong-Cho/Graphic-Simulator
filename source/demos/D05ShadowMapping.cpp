@@ -262,8 +262,30 @@ namespace demos
             disable Polygon Offset Fill
             set viewport back to the saved settings from the `viewport` field
         */
+        shaders[Shaders::WriteDepth].Use();
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::Projection, lightProjectionMatrix);
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::ViewMatrix, lightCamera.ViewMatrix());
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::NearDistance, lightNear);
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::FarDistance, lightFar);
 
+        GL::ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        shadowFrameBuffer.Use();
+        GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GL::Viewport(0, 0, shadowMapWidth, shadowMapHeight);
+        GL::Enable(GL_CULL_FACE);
+        GL::Enable(GL_DEPTH_TEST);
+        GL::DepthMask(GL_TRUE);
+        GL::Enable(GL_POLYGON_OFFSET_FILL);
+        GL::PolygonOffset(glPolygonOffset_factor, glPolygonOffset_units);
+        const auto culling = drawBackFacesForRecordDepthPass ? GL_FRONT : GL_BACK;
+        drawSceneObjects(shaders[Shaders::WriteDepth], culling);
+        GL::CullFace(GL_BACK);
         
+        shadowFrameBuffer.~GLFrameBuffer();
+
+        GL::Disable(GL_POLYGON_OFFSET_FILL);
+        GL::Viewport(viewport.x, viewport.y, viewport.height, viewport.width);
+        GL::ClearColor(FogColor.r, FogColor.g, FogColor.b, 1.0f);
     }
 
     void D05ShadowMapping::renderToScreen() const
@@ -276,6 +298,12 @@ namespace demos
         use the shadow frame buffers depth texture for slot 0
         draw scene objects using the Shadow shader and with back face culling
         */
+        GL::ClearColor(FogColor.r, FogColor.g, FogColor.b, 1.0f);
+        GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GL::Enable(GL_DEPTH_TEST);
+        GL::DepthMask(GL_TRUE);
+        shadowFrameBuffer.DepthTexture().UseForSlot(0);
+        drawSceneObjects(shaders[Shaders::Shadow], GL_BACK);
     }
 
     void D05ShadowMapping::drawLightFrustum() const
@@ -294,6 +322,15 @@ namespace demos
                 use the ndc Cube's vertex array object
                 draw the ndc Cube as an Indexed draw
             */
+
+            shaders[Shaders::Fill].Use();
+            shaders[Shaders::Fill].SendUniform(Uniforms::Projection, projectionMatrix);
+            shaders[Shaders::Fill].SendUniform(Uniforms::ViewMatrix, camera.ViewMatrix());
+            shaders[Shaders::Fill].SendUniform(Uniforms::Diffuse, glm::vec3(1.0f));
+            const auto clip_to_world = glm::inverse(lightProjectionMatrix) * glm::inverse(lightCamera.ViewMatrix());
+            shaders[Shaders::Fill].SendUniform(Uniforms::ModelMatrix, clip_to_world);
+            ndcCube.VertexArrayObj.Use();
+            GLDrawIndexed(ndcCube.VertexArrayObj);
         }
     }
 
@@ -312,6 +349,16 @@ namespace demos
                 enable depth testing
                 enable culling faces
             */
+            GL::Disable(GL_DEPTH_TEST);
+            GL::Disable(GL_CULL_FACE);
+            shaders[Shaders::ViewDepth].Use();
+            shaders[Shaders::ViewDepth].SendUniform(Uniforms::ShadowMap, 0);
+            shadowFrameBuffer.ColorTexture().UseForSlot(0);
+            ndcQuad.VertexArrayObj.Use();
+            GLDrawIndexed(ndcQuad.VertexArrayObj);
+            GL::Enable(GL_DEPTH_TEST);
+            GL::Enable(GL_CULL_FACE);
+
         }
     }
 
