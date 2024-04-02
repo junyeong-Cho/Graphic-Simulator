@@ -21,6 +21,7 @@ namespace demos
         ProceduralMeshes,
         Fog,
         ToonShading,
+        ShadowMapping,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

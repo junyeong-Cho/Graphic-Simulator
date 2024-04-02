@@ -34,6 +34,84 @@ GLTexture& GLTexture::operator=(GLTexture&& other) noexcept
     return *this;
 }
 
+bool GLTexture::LoadAsDepthTexture(int image_width, int image_height, DepthComponentSize bit_depth) noexcept
+{
+    delete_texture();
+    width  = image_width;
+    height = image_height;
+
+    /* TODO
+    if can do opengl 4.5
+        GL::CreateTextures    - https://docs.gl/gl4/glCreateTextures
+        GL::TextureStorage2D  - https://docs.gl/gl4/glTexStorage2D
+        GL::TextureParameteri - min filter linear https://docs.gl/gl4/glTexParameter
+        GL::TextureParameteri - mag filter linear
+        GL::TextureParameteri - wrap s to clamp to edge
+        GL::TextureParameteri - wrap t to clamp to edge
+        GL::TextureParameteri - compare mode to ref to texture
+        GL::TextureParameteri - compare func to less than
+    else
+        GL::GenTextures - https://docs.gl/es3/glGenTextures
+        GL::BindTexture - https://docs.gl/es3/glBindTexture
+
+        if is opengl es or opengl version is greater than or equal to 4.2
+            GL::TexStorage2D - https://docs.gl/es3/glTexStorage2D
+        else
+            GL::TexImage2D - https://docs.gl/gl3/glTexImage2D
+
+        GL::TexParameteri   - min filter linear https://docs.gl/es3/glTexParameter
+        GL::TexParameteri   - mag filter linear
+        GL::TexParameteri   - wrap s to clamp to edge
+        GL::TexParameteri   - wrap t to clamp to edge
+        GL::TexParameteri   - compare mode to ref to texture
+        GL::TexParameteri   - compare func to less than
+        GL::BindTexture     - unbind texture
+    */
+
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+			GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
+			GL::TextureStorage2D(texture_handle, 1, GL_DEPTH_COMPONENT, width, height);
+			GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			GL::TextureParameteri(texture_handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+			GL::TextureParameteri(texture_handle, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+    }
+    else
+    {
+        GL::GenTextures(1, &texture_handle);
+		GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+
+        IF_CAN_DO_OPENGL(4, 2)
+        {
+			GL::TexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT, width, height);
+		}
+		else
+		{
+			GL::TexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
+		}
+
+		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+		GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+
+		GL::BindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    return true;
+}
+
+bool GLTexture::LoadAsRGBA(int image_width, int image_height) noexcept
+{
+    // TODO update LoadFromMemory() to not call GL::TextureSubImage2D() if colors parameter is nullptr
+    return LoadFromMemory(image_width, image_height, nullptr);
+}
+
 bool GLTexture::LoadFromFileImage(std::filesystem::path image_filepath, bool flip_vertical) noexcept
 {
     if (!std::filesystem::exists(image_filepath))
@@ -66,13 +144,15 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
 
     IF_CAN_DO_OPENGL(4, 5)
     {
-        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);                                            
-        GL::TextureStorage2D(texture_handle, 1, GL_RGBA8, width, height);                                 
-        GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors); 
+        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
+        GL::TextureStorage2D(texture_handle, 1, GL_RGBA8, width, height);
+        if (colors != nullptr) 
+        {
+           GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+        }
 
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
         GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
@@ -81,11 +161,12 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
         GL::GenTextures(1, &texture_handle);
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
 
-        GL::TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+        GL::TexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+            colors); 
 
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 

@@ -530,6 +530,7 @@ namespace window
                 NameType{"Procedural Meshes",        Demos::ProceduralMeshes},
                 NameType{              "Fog",        Demos::Fog},
                 NameType{     "Toon Shading",        Demos::ToonShading},
+                NameType{   "Shadow Mapping",        Demos::ShadowMapping},
             };
 
             for (const auto& [name, demo] : supported_demos)

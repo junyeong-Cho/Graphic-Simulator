@@ -24,6 +24,19 @@ public:
     GLTexture& operator=(const GLTexture& other) = delete;
     GLTexture& operator=(GLTexture&& other) noexcept;
 
+    enum DepthComponentSize : GLenum
+    {
+        None,
+        DepthBits16  = GL_DEPTH_COMPONENT16,
+        DepthBits24  = GL_DEPTH_COMPONENT24,
+        DepthBits32  = GL_DEPTH_COMPONENT32,
+        DepthBits32F = GL_DEPTH_COMPONENT32F,
+    };
+
+    [[nodiscard]] bool LoadAsDepthTexture(int image_width, int image_height, DepthComponentSize bit_depth = DepthBits24) noexcept;
+
+    [[nodiscard]] bool LoadAsRGBA(int image_width, int image_height) noexcept;
+
     [[nodiscard]] bool LoadFromFileImage(std::filesystem::path image_filepath, bool flip_vertical = true) noexcept;
 
     using RGBA = unsigned int;

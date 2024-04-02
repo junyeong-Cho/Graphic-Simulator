@@ -22,8 +22,8 @@
 #    include <source_location>
 #    define VOID_SOURCE_LOCATION const std::source_location caller_location
 #    define SOURCE_LOCATION      , VOID_SOURCE_LOCATION
-#    define glCheck(expression) \
-        expression;             \
+#    define glCheck(expression)                                                                                                                                                                        \
+        expression;                                                                                                                                                                                    \
         glCheckError(caller_location.file_name(), caller_location.line(), caller_location.function_name(), #expression)
 
 namespace
@@ -231,6 +231,11 @@ namespace GL
         glCheck(glDrawArrays(mode, first, count));
     }
 
+    void DrawBuffers(GLsizei n, const GLenum* bufs SOURCE_LOCATION)
+    {
+        glCheck(glDrawBuffers(n, bufs));
+    }
+
     void DrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices SOURCE_LOCATION)
     {
         glCheck(glDrawElements(mode, count, type, indices));
@@ -321,6 +326,11 @@ namespace GL
         glCheck(glLinkProgram(program));
     }
 
+    void PolygonOffset(GLfloat factor, GLfloat units SOURCE_LOCATION)
+    {
+        glCheck(glPolygonOffset(factor, units));
+    }
+
     void ShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length SOURCE_LOCATION)
     {
         glCheck(glShaderSource(shader, count, string, length));
@@ -329,6 +339,11 @@ namespace GL
     void TexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* data SOURCE_LOCATION)
     {
         glCheck(glTexImage2D(target, level, internalFormat, width, height, border, format, type, data));
+    }
+
+    void TexParameterfv(GLenum target, GLenum pname, const GLfloat* params SOURCE_LOCATION)
+    {
+        glCheck(glTexParameterfv(target, pname, params));
     }
 
     void TexParameteri(GLenum target, GLenum pname, GLint param SOURCE_LOCATION)
@@ -476,9 +491,25 @@ namespace GL
         glCheck(glViewport(x, y, width, height));
     }
 
+    GLenum CheckFramebufferStatus(GLenum target SOURCE_LOCATION)
+    {
+        glCheck(const GLenum status = glCheckFramebufferStatus(target));
+        return status;
+    }
+
+    void BindFramebuffer(GLenum target, GLuint framebuffer SOURCE_LOCATION)
+    {
+        glCheck(glBindFramebuffer(target, framebuffer));
+    }
+
     void BindVertexArray(GLuint array SOURCE_LOCATION)
     {
         glCheck(glBindVertexArray(array));
+    }
+
+    void DeleteFramebuffers(GLsizei n, GLuint* framebuffers SOURCE_LOCATION)
+    {
+        glCheck(glDeleteFramebuffers(n, framebuffers));
     }
 
     void DeleteVertexArrays(GLsizei n, const GLuint* arrays SOURCE_LOCATION)
@@ -486,12 +517,33 @@ namespace GL
         glCheck(glDeleteVertexArrays(n, arrays));
     }
 
+    void FramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level SOURCE_LOCATION)
+    {
+        glCheck(glFramebufferTexture2D(target, attachment, textarget, texture, level));
+    }
+
+    void GenFramebuffers(GLsizei n, GLuint* framebuffers SOURCE_LOCATION)
+    {
+        glCheck(glGenFramebuffers(n, framebuffers));
+    }
+
     void GenVertexArrays(GLsizei n, GLuint* arrays SOURCE_LOCATION)
     {
         glCheck(glGenVertexArrays(n, arrays));
     }
 
+    void TexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height SOURCE_LOCATION)
+    {
+        glCheck(glTexStorage2D(target, levels, internalformat, width, height));
+    }
+
 #if !defined(OPENGL_ES3_ONLY)
+
+    GLenum CheckNamedFramebufferStatus(GLuint framebuffer, GLenum target SOURCE_LOCATION)
+    {
+        glCheck(const GLenum status = glCheckNamedFramebufferStatus(framebuffer, target));
+        return status;
+    }
 
     void BindTextureUnit(GLuint unit, GLuint texture SOURCE_LOCATION)
     {
@@ -501,6 +553,11 @@ namespace GL
     void CreateBuffers(GLsizei n, GLuint* buffers SOURCE_LOCATION)
     {
         glCheck(glCreateBuffers(n, buffers));
+    }
+
+    void CreateFramebuffers(GLsizei n, GLuint* ids SOURCE_LOCATION)
+    {
+        glCheck(glCreateFramebuffers(n, ids));
     }
 
     void CreateTextures(GLenum target, GLsizei n, GLuint* textures SOURCE_LOCATION)
@@ -526,6 +583,21 @@ namespace GL
     void NamedBufferSubData(GLuint buffer, GLintptr offset, GLsizei size, const void* data SOURCE_LOCATION)
     {
         glCheck(glNamedBufferSubData(buffer, offset, size, data));
+    }
+
+    void NamedFramebufferDrawBuffers(GLuint framebuffer, GLsizei n, const GLenum* bufs SOURCE_LOCATION)
+    {
+        glCheck(glNamedFramebufferDrawBuffers(framebuffer, n, bufs));
+    }
+
+    void NamedFramebufferTexture(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level SOURCE_LOCATION)
+    {
+        glCheck(glNamedFramebufferTexture(framebuffer, attachment, texture, level));
+    }
+
+    void TextureParameterfv(GLuint texture, GLenum pname, const GLfloat* paramtexture SOURCE_LOCATION)
+    {
+        glCheck(glTextureParameterfv(texture, pname, paramtexture));
     }
 
     void TextureParameteri(GLuint texture, GLenum pname, GLint param SOURCE_LOCATION)

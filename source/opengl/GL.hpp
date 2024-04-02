@@ -73,6 +73,7 @@ namespace GL
     void           DepthMask(GLboolean flag SOURCE_LOCATION);
     void           Disable(GLenum cap SOURCE_LOCATION);
     void           DrawArrays(GLenum mode, GLint first, GLsizei count SOURCE_LOCATION);
+    void           DrawBuffers(GLsizei n, const GLenum* bufs SOURCE_LOCATION);
     void           DrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid* indices SOURCE_LOCATION);
     void           Enable(GLenum cap SOURCE_LOCATION);
     void           EnableVertexAttribArray(GLuint index SOURCE_LOCATION);
@@ -91,8 +92,10 @@ namespace GL
     void           GetUniformiv(GLuint program, GLint location, GLint* params SOURCE_LOCATION);
     void           GetUniformuiv(GLuint program, GLint location, GLuint* params SOURCE_LOCATION);
     void           LinkProgram(GLuint program SOURCE_LOCATION);
+    void           PolygonOffset(GLfloat factor, GLfloat units SOURCE_LOCATION);
     void           ShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length SOURCE_LOCATION);
     void           TexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* data SOURCE_LOCATION);
+    void           TexParameterfv(GLenum target, GLenum pname, const GLfloat* params SOURCE_LOCATION);
     void           TexParameteri(GLenum target, GLenum pname, GLint param SOURCE_LOCATION);
     void           Uniform1f(GLint location, GLfloat v0 SOURCE_LOCATION);
     void           Uniform1i(GLint location, GLint v0 SOURCE_LOCATION);
@@ -125,26 +128,40 @@ namespace GL
 
 
     // Opengl Version 3.0
-    void BindVertexArray(GLuint array SOURCE_LOCATION);
-    void DeleteVertexArrays(GLsizei n, const GLuint* arrays SOURCE_LOCATION);
-    void GenVertexArrays(GLsizei n, GLuint* arrays SOURCE_LOCATION);
+    GLenum CheckFramebufferStatus(GLenum target SOURCE_LOCATION);
+    void   BindFramebuffer(GLenum target, GLuint framebuffer SOURCE_LOCATION);
+    void   BindVertexArray(GLuint array SOURCE_LOCATION);
+    void   DeleteFramebuffers(GLsizei n, GLuint* framebuffers SOURCE_LOCATION);
+    void   DeleteVertexArrays(GLsizei n, const GLuint* arrays SOURCE_LOCATION);
+    void   FramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level SOURCE_LOCATION);
+    void   GenFramebuffers(GLsizei n, GLuint* framebuffers SOURCE_LOCATION);
+    void   GenVertexArrays(GLsizei n, GLuint* arrays SOURCE_LOCATION);
+
+    // Opengl Version 4.2 or Opengl ES 3.0
+    void TexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height SOURCE_LOCATION);
 
 
     // Opengl Version 4.5
-    void BindTextureUnit(GLuint unit, GLuint texture SOURCE_LOCATION);
-    void CreateBuffers(GLsizei n, GLuint* buffers SOURCE_LOCATION);
-    void CreateTextures(GLenum target, GLsizei n, GLuint* textures SOURCE_LOCATION);
-    void CreateVertexArrays(GLsizei n, GLuint* arrays SOURCE_LOCATION);
-    void EnableVertexArrayAttrib(GLuint vaobj, GLuint index SOURCE_LOCATION);
-    void NamedBufferStorage(GLuint buffer, GLsizeiptr size, const void* data, GLbitfield flags SOURCE_LOCATION);
-    void NamedBufferSubData(GLuint buffer, GLintptr offset, GLsizei size, const void* data SOURCE_LOCATION);
-    void TextureParameteri(GLuint texture, GLenum pname, GLint param SOURCE_LOCATION);
-    void TextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height SOURCE_LOCATION);
-    void TextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels SOURCE_LOCATION);
-    void VertexArrayAttribBinding(GLuint vaobj, GLuint attribindex, GLuint bindingindex SOURCE_LOCATION);
-    void VertexArrayAttribFormat(GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset SOURCE_LOCATION);
-    void VertexArrayElementBuffer(GLuint vaobj, GLuint buffer SOURCE_LOCATION);
-    void VertexArrayVertexBuffer(GLuint vaobj, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride SOURCE_LOCATION);
+    GLenum CheckNamedFramebufferStatus(GLuint framebuffer, GLenum target SOURCE_LOCATION);
+    void   BindTextureUnit(GLuint unit, GLuint texture SOURCE_LOCATION);
+    void   CreateBuffers(GLsizei n, GLuint* buffers SOURCE_LOCATION);
+    void   CreateFramebuffers(GLsizei n, GLuint* ids SOURCE_LOCATION);
+    void   CreateTextures(GLenum target, GLsizei n, GLuint* textures SOURCE_LOCATION);
+    void   CreateVertexArrays(GLsizei n, GLuint* arrays SOURCE_LOCATION);
+    void   EnableVertexArrayAttrib(GLuint vaobj, GLuint index SOURCE_LOCATION);
+    void   NamedBufferStorage(GLuint buffer, GLsizeiptr size, const void* data, GLbitfield flags SOURCE_LOCATION);
+    void   NamedBufferSubData(GLuint buffer, GLintptr offset, GLsizei size, const void* data SOURCE_LOCATION);
+    void   NamedFramebufferDrawBuffers(GLuint framebuffer, GLsizei n, const GLenum* bufs SOURCE_LOCATION);
+    void   NamedFramebufferTexture(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level SOURCE_LOCATION);
+    void   TextureParameterfv(GLuint texture, GLenum pname, const GLfloat* paramtexture SOURCE_LOCATION);
+    void   TextureParameteri(GLuint texture, GLenum pname, GLint param SOURCE_LOCATION);
+    void   TextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height SOURCE_LOCATION);
+    void   TextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels SOURCE_LOCATION);
+    void   VertexArrayAttribBinding(GLuint vaobj, GLuint attribindex, GLuint bindingindex SOURCE_LOCATION);
+    void   VertexArrayAttribFormat(GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset SOURCE_LOCATION);
+    void   VertexArrayElementBuffer(GLuint vaobj, GLuint buffer SOURCE_LOCATION);
+    void   VertexArrayVertexBuffer(GLuint vaobj, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride SOURCE_LOCATION);
+
 
 }
 

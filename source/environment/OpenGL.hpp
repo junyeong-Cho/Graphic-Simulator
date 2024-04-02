@@ -16,10 +16,20 @@ namespace environment::opengl
     inline int  MaxElementIndices    = 0;
     inline int  MaxTextureImageUnits = 2;
     inline int  MaxTextureSize       = 64;
+
+    constexpr int version(int major, int minor) noexcept
+    {
+        return major * 100 + minor * 10;
+    }
+
+    inline int current_version() noexcept
+    {
+        return version(MajorVersion, MinorVersion);
+    }
 }
 
 #if !defined(OPENGL_ES3_ONLY)
-#    define IF_CAN_DO_OPENGL(major, minor) if (environment::opengl::MajorVersion * 100 + environment::opengl::MinorVersion * 10 >= major * 100 + minor * 10)
+#    define IF_CAN_DO_OPENGL(major, minor) if (environment::opengl::current_version() >= environment::opengl::version(major, minor))
 #else
-#    define IF_CAN_DO_OPENGL(major, minor) if constexpr (300 >= major * 100 + minor * 10)
+#    define IF_CAN_DO_OPENGL(major, minor) if constexpr (environment::opengl::version(major, minor) <= environment::opengl::version(3, 0))
 #endif

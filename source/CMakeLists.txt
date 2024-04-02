@@ -9,6 +9,7 @@ set(SOURCE_CODE
     demos/D02ProceduralMeshes.hpp demos/D02ProceduralMeshes.cpp
     demos/D03Fog.hpp demos/D03Fog.cpp
     demos/D04ToonShading.hpp demos/D04ToonSHading.cpp
+    demos/D05ShadowMapping.hpp demos/D05ShadowMapping.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
@@ -19,6 +20,7 @@ set(SOURCE_CODE
     graphics/Material.hpp graphics/Material.cpp
     graphics/Mesh.hpp graphics/Mesh.cpp
     graphics/MathHelper.hpp
+    graphics/Camera.hpp
 
     opengl/GL.hpp opengl/GL.cpp
     opengl/GLHandle.hpp
@@ -31,6 +33,7 @@ set(SOURCE_CODE
     util/FPS.hpp
     util/Timer.hpp
     util/WatchFiles.hpp util/WatchFiles.cpp
+    util/Random.hpp util/Random.cpp
 
     window/Application.hpp window/Application.cpp
     window/ImGuiHelper.hpp window/ImGuiHelper.cpp
