@@ -269,7 +269,7 @@ namespace demos
         shaders[Shaders::WriteDepth].SendUniform(Uniforms::FarDistance, lightFar);
 
         GL::ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        shadowFrameBuffer.Use();
+        shadowFrameBuffer.Use(true);
         GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         GL::Viewport(0, 0, shadowMapWidth, shadowMapHeight);
         GL::Enable(GL_CULL_FACE);
@@ -281,7 +281,7 @@ namespace demos
         drawSceneObjects(shaders[Shaders::WriteDepth], culling);
         GL::CullFace(GL_BACK);
         
-        shadowFrameBuffer.~GLFrameBuffer();
+        shadowFrameBuffer.Use(false);
 
         GL::Disable(GL_POLYGON_OFFSET_FILL);
         GL::Viewport(viewport.x, viewport.y, viewport.height, viewport.width);
@@ -323,7 +323,7 @@ namespace demos
                 draw the ndc Cube as an Indexed draw
             */
 
-            shaders[Shaders::Fill].Use();
+            shaders[Shaders::Fill].Use(true);
             shaders[Shaders::Fill].SendUniform(Uniforms::Projection, projectionMatrix);
             shaders[Shaders::Fill].SendUniform(Uniforms::ViewMatrix, camera.ViewMatrix());
             shaders[Shaders::Fill].SendUniform(Uniforms::Diffuse, glm::vec3(1.0f));
