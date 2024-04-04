@@ -281,6 +281,7 @@ namespace demos
         drawSceneObjects(shaders[Shaders::WriteDepth], culling);
         GL::CullFace(GL_BACK);
         
+        //shadowFrameBuffer.~GLFrameBuffer();
         shadowFrameBuffer.Use(false);
 
         GL::Disable(GL_POLYGON_OFFSET_FILL);

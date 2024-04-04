@@ -33,7 +33,7 @@ GLFrameBuffer& GLFrameBuffer::operator=(GLFrameBuffer&& other) noexcept
 void GLFrameBuffer::Use(bool bind) const
 {
     // TODO GL::BindFramebuffer - https://docs.gl/es3/glBindFramebuffer
-    GL::BindFramebuffer(bind ? GL_FRAMEBUFFER : GL_FRAMEBUFFER, frameBufferHandle);
+    GL::BindFramebuffer(GL_FRAMEBUFFER, bind ? frameBufferHandle : 0);  
 }
 
 void GLFrameBuffer::LoadWithSpecification(Specification spec)
