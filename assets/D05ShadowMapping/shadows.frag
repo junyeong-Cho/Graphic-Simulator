@@ -23,21 +23,29 @@ void main()
     vec3 n = normalize(vNormalInViewSpace);
     vec3 l = normalize(uLightPosition - vPositionInViewSpace);
     float nl = max(dot(n, l), 0.0);
-    vec3 eye = vec3(0, 0, 1);
+    const vec3 eye = vec3(0, 0, 1);
     vec3 h = normalize(l + eye);
     float spec = max(0.0, dot(n, h));
     spec = pow(spec, uShininess);
     vec3 diffuse = nl * uDiffuse;
 
+    // Perform shadow map texture lookup
     float shadow = textureProj(uShadowMap, vPositionInShadowSpace);
 
-    if (!uDoShadowBehindLight && vPositionInShadowSpace.z < 0.0) {
-        shadow = 1.0; // Full light behind the light source
+    // Adjust shadow value if not casting shadows behind light
+    if (!uDoShadowBehindLight && (vPositionInShadowSpace.z / vPositionInShadowSpace.w) < 0.0) {
+        shadow = 1.0;
     }
 
+    // Calculate color with shadow influence
     vec3 color = uAmbient + shadow * (diffuse + spec * uSpecularColor);
 
+    // Apply fog effect based on distance and fog density
     float distance = length(vPositionInViewSpace);
-    float fogAmount = 1.0 - exp(-pow((distance * uFogDensity), 2.0));
-    fFragmentColor = vec4(mix(color, uFogColor, fogAmount), 1.0);
+    float fogFactor = 1.0 - exp(-uFogDensity * distance);
+    fogFactor = clamp(fogFactor, 0.0, 1.0); // Ensure the factor stays within bounds
+
+    // Mix the object color with the fog color based on the calculated fog factor
+    vec3 finalColor = mix(color, uFogColor, fogFactor);
+    fFragmentColor = vec4(finalColor, 1.0);
 }

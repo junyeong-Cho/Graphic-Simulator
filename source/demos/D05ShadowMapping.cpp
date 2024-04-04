@@ -147,6 +147,7 @@ namespace demos
         shaders[Shaders::Shadow].SendUniform(Uniforms::ShadowMap, 0);
         shaders[Shaders::Shadow].SendUniform(Uniforms::ShadowMatrix, ShadowMatrix);
         shaders[Shaders::Shadow].SendUniform(Uniforms::ViewMatrix, ViewMatrix);
+
     }
 
     void D05ShadowMapping::Draw() const
@@ -278,10 +279,9 @@ namespace demos
         GL::Enable(GL_POLYGON_OFFSET_FILL);
         GL::PolygonOffset(glPolygonOffset_factor, glPolygonOffset_units);
         const auto culling = drawBackFacesForRecordDepthPass ? GL_FRONT : GL_BACK;
-        drawSceneObjects(shaders[Shaders::WriteDepth], culling);
+        drawSceneObjects(shaders[Shaders::WriteDepth], static_cast<unsigned int>(culling));
         GL::CullFace(GL_BACK);
         
-        //shadowFrameBuffer.~GLFrameBuffer();
         shadowFrameBuffer.Use(false);
 
         GL::Disable(GL_POLYGON_OFFSET_FILL);
@@ -302,7 +302,7 @@ namespace demos
         GL::ClearColor(FogColor.r, FogColor.g, FogColor.b, 1.0f);
         GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         GL::Enable(GL_DEPTH_TEST);
-        GL::DepthMask(GL_TRUE);
+        GL::Enable(GL_DEPTH_WRITEMASK);
         shadowFrameBuffer.DepthTexture().UseForSlot(0);
         drawSceneObjects(shaders[Shaders::Shadow], GL_BACK);
     }
@@ -328,8 +328,11 @@ namespace demos
             shaders[Shaders::Fill].SendUniform(Uniforms::Projection, projectionMatrix);
             shaders[Shaders::Fill].SendUniform(Uniforms::ViewMatrix, camera.ViewMatrix());
             shaders[Shaders::Fill].SendUniform(Uniforms::Diffuse, glm::vec3(1.0f));
-            const auto clip_to_world = glm::inverse(lightProjectionMatrix) * glm::inverse(lightCamera.ViewMatrix());
-            shaders[Shaders::Fill].SendUniform(Uniforms::ModelMatrix, clip_to_world);
+
+            const auto ModelMatrix = lightCamera.ToWorldMatrix() * glm::inverse(lightProjectionMatrix);
+            shaders[Shaders::Fill].SendUniform(Uniforms::ModelMatrix, ModelMatrix);
+
+
             ndcCube.VertexArrayObj.Use();
             GLDrawIndexed(ndcCube.VertexArrayObj);
         }
@@ -352,10 +355,10 @@ namespace demos
             */
             GL::Disable(GL_DEPTH_TEST);
             GL::Disable(GL_CULL_FACE);
-            shaders[Shaders::ViewDepth].Use();
+            shaders[Shaders::ViewDepth].Use(true);
             shaders[Shaders::ViewDepth].SendUniform(Uniforms::ShadowMap, 0);
             shadowFrameBuffer.ColorTexture().UseForSlot(0);
-            ndcQuad.VertexArrayObj.Use();
+            ndcQuad.VertexArrayObj.Use(true);
             GLDrawIndexed(ndcQuad.VertexArrayObj);
             GL::Enable(GL_DEPTH_TEST);
             GL::Enable(GL_CULL_FACE);

@@ -100,10 +100,10 @@ namespace graphics
 
             const glm::vec4 column_3{ Right.z, Up.z, Back.z, 0 };
 
-            const glm::vec4 column_4{ -glm::dot(Right, Eye), -glm::dot(Up, Eye), -glm::dot(Back, Eye), 1 };
+            const glm::vec4 column_4{ Eye.x, Eye.y, Eye.z, 1 };
 
-            glm::mat4 orientationTranspose = glm::mat4(column_1, column_2, column_3, glm::vec4(0, 0, 0, 1));
-            glm::vec4 inversePosition      = -orientationTranspose * glm::vec4(Eye, 1.0f);
+            glm::mat4 orientation     = glm::mat4(column_1, column_2, column_3, glm::vec4(0, 0, 0, 1)); 
+            glm::vec4 inversePosition = orientation * glm::vec4(Eye, 1.0f); 
 
 
             return glm::mat4(column_1, column_2, column_3, inversePosition);

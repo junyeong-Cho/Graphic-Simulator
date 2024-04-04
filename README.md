@@ -63,7 +63,7 @@ source ~/emsdk/emsdk_env.sh
 emcmake cmake -B build/webrelease -S . -DCMAKE_BUILD_TYPE=Release
 emcmake cmake -B build/webdebug -S . -DCMAKE_BUILD_TYPE=Debug
 cmake --build build/release --config Release
-cmake --build build/debug --config Debug
+cmake --build build//debug --config Debug
 cmake --build build/webrelease --config Release
 cmake --build build/webdebug --config Debug
 ```
