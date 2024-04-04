@@ -8,9 +8,7 @@ in vec3 vNormalInViewSpace;
 in vec3 vPositionInViewSpace;
 in vec4 vPositionInShadowSpace;
 
-// TODO use the shadpw map
- uniform sampler2DShadow uShadowMap;
-
+uniform sampler2DShadow uShadowMap;
 uniform vec3  uFogColor;
 uniform float uFogDensity;
 uniform vec3  uDiffuse;
@@ -20,47 +18,35 @@ uniform vec3  uSpecularColor;
 uniform vec3  uLightPosition;
 uniform bool  uDoShadowBehindLight;
 
-void main()
-{
-    vec3       n    = normalize(vNormalInViewSpace);
-    vec3       l    = normalize(uLightPosition - vPositionInViewSpace);
-    float      nl   = max(dot(n, l), 0.0f);
-    const vec3 eye  = vec3(0, 0, 1);
-    vec3       h    = normalize(l + eye);
-    float      spec = max(0.0f, dot(n, h));
-    spec            = pow(spec, uShininess);
-    vec3 diffuse    = nl * uDiffuse;
+void main() {
+    float shadow;
+    vec3 n = normalize(vNormalInViewSpace);
+    vec3 l = normalize(uLightPosition - vPositionInViewSpace);
+    float nl = max(dot(n, l), 0.0);
+    const vec3 eye = vec3(0, 0, 1);
+    vec3 h = normalize(l + eye);
+    float spec = max(0.0, dot(n, h));
+    spec = pow(spec, uShininess);
+    vec3 diffuse = nl * uDiffuse;
 
-    // TODO get shadow value from doing a projection texture lookup
     vec3 projCoords = vPositionInShadowSpace.xyz / vPositionInShadowSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
-    shadow = texture(uShadowMap, projCoords);
-
-
-    float shadow = 1.0;
-    //TODO if not uDoShadowBehindLight and z position in shadow space is less than 0
-        // hardcode shadow value to 1 to make full light behind the light source
-    if(!uDoShadowBehindLight && vPositionInShadowSpace.z < 0.0)
-	{
-		shadow = 1.0;
-	}
-	else
-	{
-		shadow = texture(uShadowMap, vPositionInShadowSpace);
-	}
     
+    // 적절한 깊이 비교 값을 포함하여 그림자 값을 계산합니다.
+    if(!uDoShadowBehindLight && vPositionInShadowSpace.z < 0.0) {
+        shadow = 1.0;
+    } else {
+        // texture 함수 호출 시 비교 깊이 값으로 projCoords.z 사용
+        shadow = texture(uShadowMap, vec3(projCoords.xy, projCoords.z));
+    }
 
-    // If the fragment is in shadow, use ambient light only.
-    if(shadow == 0.0)
-	{
-		fFragmentColor = vec4(uAmbient, 1.0f);
-		return;
-	}
+    if(shadow < 0.5) { // 가정: shadow가 0.5 미만이면 그림자 안에 있는 것으로 간주
+        fFragmentColor = vec4(uAmbient, 1.0);
+        return;
+    }
 
-    vec3        color       = uAmbient + shadow * (diffuse + spec * uSpecularColor);
+    vec3 color = uAmbient + shadow * (diffuse + spec * uSpecularColor);
 
-    // TODO apply fogdensity
-    float       fogAmount   = uFogDensity * length(vPositionInViewSpace);
-    //float       fogAmount   = 0.0f;
-    fFragmentColor          = vec4(mix(color, uFogColor, fogAmount), 1.0f);
+    float fogAmount = clamp(uFogDensity * length(vPositionInViewSpace), 0.0, 1.0);
+    fFragmentColor = vec4(mix(color, uFogColor, fogAmount), 1.0);
 }
