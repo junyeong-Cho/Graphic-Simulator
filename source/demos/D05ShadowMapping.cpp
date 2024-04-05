@@ -263,21 +263,26 @@ namespace demos
             disable Polygon Offset Fill
             set viewport back to the saved settings from the `viewport` field
         */
+        
         shaders[Shaders::WriteDepth].Use();
-        shaders[Shaders::WriteDepth].SendUniform(Uniforms::Projection, lightProjectionMatrix);
-        shaders[Shaders::WriteDepth].SendUniform(Uniforms::ViewMatrix, lightCamera.ViewMatrix());
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::Projection,   lightProjectionMatrix);
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::ViewMatrix,   lightCamera.ViewMatrix());
         shaders[Shaders::WriteDepth].SendUniform(Uniforms::NearDistance, lightNear);
-        shaders[Shaders::WriteDepth].SendUniform(Uniforms::FarDistance, lightFar);
+        shaders[Shaders::WriteDepth].SendUniform(Uniforms::FarDistance,  lightFar);
 
         GL::ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         shadowFrameBuffer.Use(true);
         GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         GL::Viewport(0, 0, shadowMapWidth, shadowMapHeight);
         GL::Enable(GL_CULL_FACE);
         GL::Enable(GL_DEPTH_TEST);
+
         GL::DepthMask(GL_TRUE);
         GL::Enable(GL_POLYGON_OFFSET_FILL);
+
         GL::PolygonOffset(glPolygonOffset_factor, glPolygonOffset_units);
+
         const auto culling = drawBackFacesForRecordDepthPass ? GL_FRONT : GL_BACK;
         drawSceneObjects(shaders[Shaders::WriteDepth], static_cast<unsigned int>(culling));
         GL::CullFace(GL_BACK);
@@ -285,8 +290,9 @@ namespace demos
         shadowFrameBuffer.Use(false);
 
         GL::Disable(GL_POLYGON_OFFSET_FILL);
-        GL::Viewport(viewport.x, viewport.y, viewport.height, viewport.width);
+        GL::Viewport(viewport.x, viewport.y, viewport.width, viewport.height);
         GL::ClearColor(FogColor.r, FogColor.g, FogColor.b, 1.0f);
+        
     }
 
     void D05ShadowMapping::renderToScreen() const
@@ -325,14 +331,21 @@ namespace demos
             */
 
             shaders[Shaders::Fill].Use(true);
+
             shaders[Shaders::Fill].SendUniform(Uniforms::Projection, projectionMatrix);
             shaders[Shaders::Fill].SendUniform(Uniforms::ViewMatrix, camera.ViewMatrix());
-            shaders[Shaders::Fill].SendUniform(Uniforms::Diffuse, glm::vec3(1.0f));
+            shaders[Shaders::Fill].SendUniform(Uniforms::Diffuse,    glm::vec3(1.0f));
 
-            const auto ModelMatrix = lightCamera.ToWorldMatrix() * glm::inverse(lightProjectionMatrix);
-            shaders[Shaders::Fill].SendUniform(Uniforms::ModelMatrix, ModelMatrix);
+            
+            
+            glm::mat4 clipToLightViewMatrix  = glm::inverse(lightProjectionMatrix);
+            glm::mat4 lightViewToWorldMatrix = lightCamera.ToWorldMatrix();
+            
+            glm::mat4 modelMatrix            = lightViewToWorldMatrix * clipToLightViewMatrix;
 
-
+            shaders[Shaders::Fill].SendUniform(Uniforms::ModelMatrix, modelMatrix);
+            
+            
             ndcCube.VertexArrayObj.Use();
             GLDrawIndexed(ndcCube.VertexArrayObj);
         }
@@ -380,10 +393,10 @@ namespace demos
             const auto      NormalMatrix = ViewMatrix * glm::mat3(r);
             shader.SendUniform(Uniforms::ModelMatrix, ModelMatrix);
             shader.SendUniform(Uniforms::NormalMatrix, NormalMatrix);
-            shader.SendUniform(Uniforms::Ambient, scene_object.Material.Ambient);
-            shader.SendUniform(Uniforms::Diffuse, scene_object.Material.Diffuse);
+            shader.SendUniform(Uniforms::Ambient,       scene_object.Material.Ambient);
+            shader.SendUniform(Uniforms::Diffuse,       scene_object.Material.Diffuse);
             shader.SendUniform(Uniforms::SpecularColor, scene_object.Material.SpecularColor);
-            shader.SendUniform(Uniforms::Shininess, scene_object.Material.Shininess);
+            shader.SendUniform(Uniforms::Shininess,     scene_object.Material.Shininess);
             if (scene_object.Material.CullFaces)
             {
                 GL::Enable(GL_CULL_FACE);

@@ -29,15 +29,16 @@ void main()
     spec = pow(spec, uShininess);
     vec3 diffuse = nl * uDiffuse;
 
-    // Perform shadow map texture lookup
+
     float shadow = textureProj(uShadowMap, vPositionInShadowSpace);
 
     // Adjust shadow value if not casting shadows behind light
-    if (!uDoShadowBehindLight && (vPositionInShadowSpace.z / vPositionInShadowSpace.w) < 0.0) {
+    if(!(uDoShadowBehindLight) && (vPositionInShadowSpace.z < 0.0))
+    {
         shadow = 1.0;
     }
 
-    // Calculate color with shadow influence
+    
     vec3 color = uAmbient + shadow * (diffuse + spec * uSpecularColor);
 
     // Apply fog effect based on distance and fog density

@@ -89,23 +89,26 @@ else
         GL::GenTextures(1, &texture_handle);
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
 
-        IF_CAN_DO_OPENGL(4, 2)
+        if (!environment::opengl::IsOpenGL_ES)
         {
-            // Use bit_depth as the format for the depth component
-            GL::TexStorage2D(GL_TEXTURE_2D, 1, static_cast<GLenum>(bit_depth), width, height);
+            IF_CAN_DO_OPENGL(4, 2)
+            {
+                // Use bit_depth as the format for the depth component
+                GL::TexStorage2D(GL_TEXTURE_2D, 1, static_cast<GLenum>(bit_depth), width, height);
+            }
         }
         else
         {
-            GLenum internalFormat;
+            GLenum format = GL_DEPTH_COMPONENT;
             switch (bit_depth)
             {
-                case DepthBits16: internalFormat = GL_DEPTH_COMPONENT16; break;
-                case DepthBits24: internalFormat = GL_DEPTH_COMPONENT24; break;
-                case DepthBits32: internalFormat = GL_DEPTH_COMPONENT32; break;
-                case DepthBits32F: internalFormat = GL_DEPTH_COMPONENT32F; break;
-                default: internalFormat = GL_DEPTH_COMPONENT24; // Fallback to a sensible default value
+                case DepthBits16: format = GL_DEPTH_COMPONENT16; break;
+                case DepthBits24: format = GL_DEPTH_COMPONENT24; break;
+                case DepthBits32: format = GL_DEPTH_COMPONENT32; break;
+                case DepthBits32F: format = GL_DEPTH_COMPONENT32F; break;
+                default: break; 
             }
-            GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, nullptr);
+            GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(format), width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
         }
 
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
