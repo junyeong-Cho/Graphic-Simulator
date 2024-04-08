@@ -94,19 +94,15 @@ namespace graphics
         {
             // TODO fill in column vectors of the Inverse of the View Matrix (camera space to world space)
             //      DO NOT invoke any external functions like glm::inverse. It is not needed!
-            const glm::vec4 column_1{ Right.x, Up.x, Back.x, 0 };
+            const glm::vec4 column_1{ Right.x, Right.y, Right.z, 0 };
+            const glm::vec4 column_2{ Up.x, Up.y, Up.z, 0 };
+            const glm::vec4 column_3{ Back.x, Back.y, Back.z, 0 };
 
-            const glm::vec4 column_2{ Right.y, Up.y, Back.y, 0 };
-
-            const glm::vec4 column_3{ Right.z, Up.z, Back.z, 0 };
 
             const glm::vec4 column_4{ Eye.x, Eye.y, Eye.z, 1 };
 
-            glm::mat4 orientation     = glm::mat4(column_1, column_2, column_3, glm::vec4(0, 0, 0, 1)); 
-            glm::vec4 inversePosition = orientation * glm::vec4(Eye, 1.0f); 
-
-
-            return glm::mat4(column_1, column_2, column_3, inversePosition);
+            // Constructing the transformation matrix with the corrected columns.
+            return glm::mat4{ column_1, column_2, column_3, column_4 };
         }
     };
 }

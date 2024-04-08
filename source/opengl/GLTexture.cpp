@@ -34,8 +34,6 @@ GLTexture& GLTexture::operator=(GLTexture&& other) noexcept
     return *this;
 }
 
-
-
 bool GLTexture::LoadAsDepthTexture(int image_width, int image_height, DepthComponentSize bit_depth) noexcept
 {
     delete_texture();
@@ -43,32 +41,32 @@ bool GLTexture::LoadAsDepthTexture(int image_width, int image_height, DepthCompo
     height = image_height;
 
 
-        /* TODO
+    /* TODO
 if can do opengl 4.5
-    GL::CreateTextures    - https://docs.gl/gl4/glCreateTextures
-    GL::TextureStorage2D  - https://docs.gl/gl4/glTexStorage2D
-    GL::TextureParameteri - min filter linear https://docs.gl/gl4/glTexParameter
-    GL::TextureParameteri - mag filter linear
-    GL::TextureParameteri - wrap s to clamp to edge
-    GL::TextureParameteri - wrap t to clamp to edge
-    GL::TextureParameteri - compare mode to ref to texture
-    GL::TextureParameteri - compare func to less than
+GL::CreateTextures    - https://docs.gl/gl4/glCreateTextures
+GL::TextureStorage2D  - https://docs.gl/gl4/glTexStorage2D
+GL::TextureParameteri - min filter linear https://docs.gl/gl4/glTexParameter
+GL::TextureParameteri - mag filter linear
+GL::TextureParameteri - wrap s to clamp to edge
+GL::TextureParameteri - wrap t to clamp to edge
+GL::TextureParameteri - compare mode to ref to texture
+GL::TextureParameteri - compare func to less than
 else
-    GL::GenTextures - https://docs.gl/es3/glGenTextures
-    GL::BindTexture - https://docs.gl/es3/glBindTexture
+GL::GenTextures - https://docs.gl/es3/glGenTextures
+GL::BindTexture - https://docs.gl/es3/glBindTexture
 
-    if is opengl es or opengl version is greater than or equal to 4.2
-        GL::TexStorage2D - https://docs.gl/es3/glTexStorage2D
-    else
-        GL::TexImage2D - https://docs.gl/gl3/glTexImage2D
+if is opengl es or opengl version is greater than or equal to 4.2
+    GL::TexStorage2D - https://docs.gl/es3/glTexStorage2D
+else
+    GL::TexImage2D - https://docs.gl/gl3/glTexImage2D
 
-    GL::TexParameteri   - min filter linear https://docs.gl/es3/glTexParameter
-    GL::TexParameteri   - mag filter linear
-    GL::TexParameteri   - wrap s to clamp to edge
-    GL::TexParameteri   - wrap t to clamp to edge
-    GL::TexParameteri   - compare mode to ref to texture
-    GL::TexParameteri   - compare func to less than
-    GL::BindTexture     - unbind texture
+GL::TexParameteri   - min filter linear https://docs.gl/es3/glTexParameter
+GL::TexParameteri   - mag filter linear
+GL::TexParameteri   - wrap s to clamp to edge
+GL::TexParameteri   - wrap t to clamp to edge
+GL::TexParameteri   - compare mode to ref to texture
+GL::TexParameteri   - compare func to less than
+GL::BindTexture     - unbind texture
 */
 
 
@@ -93,22 +91,21 @@ else
         {
             IF_CAN_DO_OPENGL(4, 2)
             {
-                // Use bit_depth as the format for the depth component
-                GL::TexStorage2D(GL_TEXTURE_2D, 1, static_cast<GLenum>(bit_depth), width, height);
+                GLenum format = GL_DEPTH_COMPONENT;
+                switch (bit_depth)
+                {
+                    case DepthBits16: format = GL_DEPTH_COMPONENT16; break;
+                    case DepthBits24: format = GL_DEPTH_COMPONENT24; break;
+                    case DepthBits32: format = GL_DEPTH_COMPONENT32; break;
+                    case DepthBits32F: format = GL_DEPTH_COMPONENT32F; break;
+                    default: break;
+                }
+                GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(format), width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
             }
         }
         else
         {
-            GLenum format = GL_DEPTH_COMPONENT;
-            switch (bit_depth)
-            {
-                case DepthBits16: format = GL_DEPTH_COMPONENT16; break;
-                case DepthBits24: format = GL_DEPTH_COMPONENT24; break;
-                case DepthBits32: format = GL_DEPTH_COMPONENT32; break;
-                case DepthBits32F: format = GL_DEPTH_COMPONENT32F; break;
-                default: break; 
-            }
-            GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(format), width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+            GL::TexStorage2D(GL_TEXTURE_2D, 1, static_cast<GLenum>(bit_depth), width, height);
         }
 
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -124,10 +121,8 @@ else
     return true;
 }
 
-
 bool GLTexture::LoadAsRGBA(int image_width, int image_height) noexcept
 {
-
     return LoadFromMemory(image_width, image_height, nullptr);
 }
 
@@ -165,9 +160,9 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
     {
         GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
         GL::TextureStorage2D(texture_handle, 1, GL_RGBA8, width, height);
-        if (colors != nullptr) 
+        if (colors != nullptr)
         {
-           GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+            GL::TextureSubImage2D(texture_handle, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
         }
 
         GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -180,9 +175,7 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
         GL::GenTextures(1, &texture_handle);
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
 
-        GL::TexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-            colors); 
+        GL::TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, colors);
 
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
