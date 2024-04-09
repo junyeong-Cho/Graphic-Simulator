@@ -41,35 +41,6 @@ bool GLTexture::LoadAsDepthTexture(int image_width, int image_height, DepthCompo
     height = image_height;
 
 
-    /* TODO
-if can do opengl 4.5
-GL::CreateTextures    - https://docs.gl/gl4/glCreateTextures
-GL::TextureStorage2D  - https://docs.gl/gl4/glTexStorage2D
-GL::TextureParameteri - min filter linear https://docs.gl/gl4/glTexParameter
-GL::TextureParameteri - mag filter linear
-GL::TextureParameteri - wrap s to clamp to edge
-GL::TextureParameteri - wrap t to clamp to edge
-GL::TextureParameteri - compare mode to ref to texture
-GL::TextureParameteri - compare func to less than
-else
-GL::GenTextures - https://docs.gl/es3/glGenTextures
-GL::BindTexture - https://docs.gl/es3/glBindTexture
-
-if is opengl es or opengl version is greater than or equal to 4.2
-    GL::TexStorage2D - https://docs.gl/es3/glTexStorage2D
-else
-    GL::TexImage2D - https://docs.gl/gl3/glTexImage2D
-
-GL::TexParameteri   - min filter linear https://docs.gl/es3/glTexParameter
-GL::TexParameteri   - mag filter linear
-GL::TexParameteri   - wrap s to clamp to edge
-GL::TexParameteri   - wrap t to clamp to edge
-GL::TexParameteri   - compare mode to ref to texture
-GL::TexParameteri   - compare func to less than
-GL::BindTexture     - unbind texture
-*/
-
-
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);

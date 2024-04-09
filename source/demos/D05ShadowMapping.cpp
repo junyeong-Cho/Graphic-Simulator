@@ -241,29 +241,6 @@ namespace demos
 
     void D05ShadowMapping::renderToDepthBuffer() const
     {
-        /* TODO
-            Use the WriteDepth shader
-            Send the Projection as the light's projection matrix
-            Send the ViewMatrix as the light's view matrix
-            Send the NearDistance as the light's near distance
-            Send the FarDistance as the light's far distance
-
-            set clear color to pure white
-            use the shadow frame buffer
-            clear the color buffer and depth buffer
-            set the viewport to the shadow frame buffer dimensions
-            enable culling
-            enable depth testing
-            enable depth writing
-            enable Polygon Offset Fill
-            invoke polygon offset fill with specified factor & units fields
-            draw scene objects with WriteDepth shader and cull front or back facing triangles based off of ImGui setting
-            reset culling to back facing triangles
-            do not use the shadow frame buffer anymore
-            disable Polygon Offset Fill
-            set viewport back to the saved settings from the `viewport` field
-        */
-        
         shaders[Shaders::WriteDepth].Use();
         shaders[Shaders::WriteDepth].SendUniform(Uniforms::Projection,   lightProjectionMatrix);
         shaders[Shaders::WriteDepth].SendUniform(Uniforms::ViewMatrix,   lightCamera.ViewMatrix());
@@ -297,18 +274,10 @@ namespace demos
 
     void D05ShadowMapping::renderToScreen() const
     {
-        /* TODO
-        set clear color to be fog color
-        clear color buffer and depth buffer
-        enable depth testing
-        enable depth writing
-        use the shadow frame buffers depth texture for slot 0
-        draw scene objects using the Shadow shader and with back face culling
-        */
         GL::ClearColor(FogColor.r, FogColor.g, FogColor.b, 1.0f);
         GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         GL::Enable(GL_DEPTH_TEST);
-        GL::Enable(GL_DEPTH_WRITEMASK);
+        GL::DepthMask(GL_TRUE);
         shadowFrameBuffer.DepthTexture().UseForSlot(0);
         drawSceneObjects(shaders[Shaders::Shadow], GL_BACK);
     }
@@ -317,18 +286,6 @@ namespace demos
     {
         if (shouldDrawLightFrustum && cameraMode != CameraMode::Light)
         {
-            /* TODO
-                Use the Fill shader
-                send Projection as camera's projection matrix
-                send ViewMatrix as the camera's view matrix
-                send the Diffuse color as pure white
-                create ModelMatrix as matrix that goes from the light's clip space to world space
-                    clip space to light's view space is the inverse of the light's projection matrix
-                    light's view space to world space is the light's camera's ToWorld matrix
-                send the model matrix
-                use the ndc Cube's vertex array object
-                draw the ndc Cube as an Indexed draw
-            */
 
             shaders[Shaders::Fill].Use(true);
 

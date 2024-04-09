@@ -16,15 +16,11 @@ uniform mat4 uShadowMatrix;
 
 void main()
 {
-    // TODO set gl_Position to position in clip space
     gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
 
-    // TODO set vNormalInViewSpace to be normal in view space 
     vNormalInViewSpace = normalize(uNormalMatrix * aVertexNormal);
 
-    // TODO set vPositionInViewSpace to be position in view space
     vPositionInViewSpace = ((uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0)).xyz);
 
-    // TODO set vPositionInShadowSpace to be in shadow space
     vPositionInShadowSpace = uShadowMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
 }

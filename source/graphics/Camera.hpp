@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author TODO Your Name
+ * \author Junyeong Cho
  * \date 2024 Spring
  * \par CS250 Computer Graphics II
  * \copyright DigiPen Institute of Technology
@@ -65,8 +65,6 @@ namespace graphics
 
         [[nodiscard]] constexpr glm::mat4 ViewMatrix() const noexcept
         {
-            // TODO fill in column vectors of the View Matrix (world space to camera space)
-            //      You do not need any external functions except for doing a dot product
             const glm::vec4 column_1
             {
                 Right.x, Up.x, Back.x, 0
@@ -92,8 +90,6 @@ namespace graphics
 
         [[nodiscard]] constexpr glm::mat4 ToWorldMatrix() const noexcept
         {
-            // TODO fill in column vectors of the Inverse of the View Matrix (camera space to world space)
-            //      DO NOT invoke any external functions like glm::inverse. It is not needed!
             const glm::vec4 column_1{ Right.x, Right.y, Right.z, 0 };
             const glm::vec4 column_2{ Up.x, Up.y, Up.z, 0 };
             const glm::vec4 column_3{ Back.x, Back.y, Back.z, 0 };

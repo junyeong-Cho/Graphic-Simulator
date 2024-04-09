@@ -32,7 +32,6 @@ GLFrameBuffer& GLFrameBuffer::operator=(GLFrameBuffer&& other) noexcept
 
 void GLFrameBuffer::Use(bool bind) const
 {
-    // TODO GL::BindFramebuffer - https://docs.gl/es3/glBindFramebuffer
     GL::BindFramebuffer(GL_FRAMEBUFFER, bind ? frameBufferHandle : 0);  
 }
 
@@ -74,26 +73,7 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
 
 
     GLenum status_result;
-    /* TODO
-        if can do opengl 4.5
-            GL::CreateFramebuffers - https://docs.gl/gl4/glCreateFramebuffers
-            if depth format is not None
-                GL::NamedFramebufferTexture - add depth attachment https://docs.gl/gl4/glFramebufferTexture
-            if color format is not None
-                GL::NamedFramebufferTexture - add color 0 attachment
-            GL::NamedFramebufferDrawBuffers - https://docs.gl/gl4/glDrawBuffers
-            GL::CheckNamedFramebufferStatus - https://docs.gl/gl4/glCheckFramebufferStatus
-        else
-            GL::GenFramebuffers - https://docs.gl/es3/glGenFramebuffers
-            GL::BindFramebuffer - https://docs.gl/es3/glBindFramebuffer
-            if depth format is not None
-                GL::FramebufferTexture2D - add depth attachment https://docs.gl/es3/glFramebufferTexture2D
-            if color format is not None
-                GL::FramebufferTexture2D - add color 0 attachment
-            GL::DrawBuffers - https://docs.gl/es3/glDrawBuffers
-            GL::CheckFramebufferStatus - https://docs.gl/es3/glCheckFramebufferStatus
-            GL::BindFramebuffer - unbind framebuffer
-    */
+
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::CreateFramebuffers(1, &frameBufferHandle);
@@ -144,7 +124,6 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
 
 void GLFrameBuffer::delete_resources() noexcept
 {
-    // TODO GL::DeleteFramebuffers - https://docs.gl/es3/glDeleteFramebuffers
     GL::DeleteFramebuffers(1, &frameBufferHandle);
     frameBufferHandle = 0;
 }
