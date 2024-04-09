@@ -312,17 +312,6 @@ namespace demos
     {
         if (shouldDrawDepthTexture)
         {
-            /* TODO
-                disable depth testing
-                disable culling faces
-                use the ViewDepth shader
-                send 0 for the ShadowMap sampler uniform
-                use the shadow frame buffer's color texture for slot 0
-                use the ndc Quad vertex array object
-                draw the ndc Quad as an Indexed draw
-                enable depth testing
-                enable culling faces
-            */
             GL::Disable(GL_DEPTH_TEST);
             GL::Disable(GL_CULL_FACE);
             shaders[Shaders::ViewDepth].Use(true);
