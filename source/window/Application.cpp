@@ -525,13 +525,22 @@ namespace window
                 Demos       demo{ demos::Demos::HelloQuad };
             };
 
-            std::vector supported_demos = {
+            std::vector supported_demos = 
+            {
                 NameType{       "Hello Quad",        Demos::HelloQuad},
                 NameType{"Procedural Meshes",        Demos::ProceduralMeshes},
                 NameType{              "Fog",        Demos::Fog},
                 NameType{     "Toon Shading",        Demos::ToonShading},
                 NameType{   "Shadow Mapping",        Demos::ShadowMapping},
             };
+
+            if (!(environment::opengl::IsOpenGL_ES))
+            {
+                IF_CAN_DO_OPENGL(3, 2)
+                {
+                    supported_demos.push_back(NameType{ "Geometry Shaders", Demos::GeometryShaders });
+                }
+            }
 
             for (const auto& [name, demo] : supported_demos)
             {

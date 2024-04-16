@@ -22,6 +22,7 @@ namespace demos
         Fog,
         ToonShading,
         ShadowMapping,
+        GeometryShaders,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

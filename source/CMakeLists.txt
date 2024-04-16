@@ -10,6 +10,7 @@ set(SOURCE_CODE
     demos/D03Fog.hpp demos/D03Fog.cpp
     demos/D04ToonShading.hpp demos/D04ToonSHading.cpp
     demos/D05ShadowMapping.hpp demos/D05ShadowMapping.cpp
+    demos/D06GeometryShaders.hpp demos/D06GeometryShaders.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
