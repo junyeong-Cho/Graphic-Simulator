@@ -15,8 +15,11 @@ out vec4 vColor;
 
 void main()
 {
-	vNormals			= aVertexNormal;
-	vColor = vec4(abs(aVertexNormal), 1.0);
-	vTextureCoordinates = aVertexTextureCoordinates;
+    mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
+    vNormals          = normalMatrix * aVertexNormal;
+    
+    vColor = vec4(abs(aVertexNormal), 1.0);
+    vTextureCoordinates = aVertexTextureCoordinates;
+
     gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
 }

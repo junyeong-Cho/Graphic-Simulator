@@ -2,30 +2,26 @@
 layout(triangles) in;
 layout(line_strip, max_vertices = 6) out;
 
-in vec3 vNormals[];
-out vec3 fColor;
+// Define the length of the normal lines for visualization
+uniform float uNormalLength = 0.005;
 
-uniform mat4 uModelMatrix;
-uniform float uNormalLength = 0.1;  
+in vec3 vNormals[3];
+in vec4 vColor[3];
 
 void main() 
 {
-    vec3 normalColor = vec3(0.0, 0.0, 0.0);  
-
     for (int i = 0; i < 3; i++) 
     {
-        vec4 worldPosition = uModelMatrix * gl_in[i].gl_Position;
-        vec3 normal = normalize(mat3(uModelMatrix) * vNormals[i]) * uNormalLength;
-
-        
-        gl_Position = worldPosition;
-        fColor = normalColor;
+        // Start from the position of the current vertex
+        gl_Position = gl_in[i].gl_Position;
         EmitVertex();
 
-        gl_Position = worldPosition + vec4(normal, 0.0);
-        fColor = normalColor;
+        // End at the position plus the normal scaled by uNormalLength
+        vec4 normalOffset = vec4(vNormals[i] * 0.04, 0.0);
+        gl_Position = gl_in[i].gl_Position + normalOffset;
         EmitVertex();
 
+        // Finish this line segment
         EndPrimitive();
     }
 }
