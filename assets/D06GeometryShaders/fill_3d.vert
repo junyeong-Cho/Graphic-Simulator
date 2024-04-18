@@ -11,10 +11,12 @@ uniform mat4 uProjection;
 
 out vec3 vNormals;
 out vec2 vTextureCoordinates;
+out vec4 vColor;
 
 void main()
 {
 	vNormals			= aVertexNormal;
+	vColor = vec4(abs(aVertexNormal), 1.0);
 	vTextureCoordinates = aVertexTextureCoordinates;
     gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
 }

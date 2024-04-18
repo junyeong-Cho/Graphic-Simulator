@@ -5,9 +5,10 @@ layout(location = 0) out vec4 fFragmentColor;
 
 uniform vec3 uDiffuseMaterial;
 
-in vec3 fColor;
+in vec4 gColor;
 
 void main()
 {
     fFragmentColor = vec4(uDiffuseMaterial, 1.0);
+
 }
