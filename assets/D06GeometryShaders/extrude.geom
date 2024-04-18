@@ -3,18 +3,19 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 14) out;
 
 in vec2 vTextureCoordinates[];
+in vec3 vNormals[];
+
 out vec2 fTextureCoordinates;
-out float fHeight;
+out float fLightIntensity; 
 
 uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjection;
-uniform float uExtrudeLength;
-uniform bool uUseFlatNormals;
+uniform float uExtrudeFactor;
+uniform bool uFlat;
 
-void main() {
+void main() 
+{
     vec3 normal;
-    if (uUseFlatNormals) 
+    if (uFlat) 
     {
         vec3 edge1 = gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz;
         vec3 edge2 = gl_in[2].gl_Position.xyz - gl_in[0].gl_Position.xyz;
@@ -22,45 +23,45 @@ void main() {
     } 
     else 
     {
-        normal = normalize(gl_in[0].gl_Normal + gl_in[1].gl_Normal + gl_in[2].gl_Normal);
+        normal = normalize((vNormals[0] + vNormals[1] + vNormals[2]) / 3.0);
     }
 
-    vec4 baseVertices[3];
-    vec4 extrudedVertices[3];
+    // 원본 삼각형 출력
+    for (int i = 0; i < 3; ++i) {
+        gl_Position = gl_in[i].gl_Position;
+        fTextureCoordinates = vTextureCoordinates[i];
+        fLightIntensity = 0.0;
+        EmitVertex();
+    }
+    EndPrimitive();
 
-    for (int i = 0; i < 3; i++) 
+    // 압출하여 만든 사이드 페이스
+    for (int i = 0; i < 3; ++i) 
     {
-        baseVertices[i] = uProjection * uViewMatrix * uModelMatrix * gl_in[i].gl_Position;
-        extrudedVertices[i] = baseVertices[i] + vec4(normal * uExtrudeLength, 0.0);
-
-        // Emit the base vertex
+        gl_Position = gl_in[i].gl_Position;
         fTextureCoordinates = vTextureCoordinates[i];
-        fHeight = 0.0;
-        gl_Position = baseVertices[i];
+        fLightIntensity = 0.0;
         EmitVertex();
 
-        // Emit the extruded vertex
+        gl_Position = gl_in[i].gl_Position + vec4(normal * uExtrudeFactor, 0.0);
         fTextureCoordinates = vTextureCoordinates[i];
-        fHeight = 1.0;
-        gl_Position = extrudedVertices[i];
+        fLightIntensity = 1.0;
         EmitVertex();
 
-        if (i < 2) 
-        {
-            // Repeat the first two vertices to continue the strip
+        // EndPrimitive() 호출을 적절한 위치에 추가
+        if (i < 2) {
             EndPrimitive();
+            EmitVertex();  // 시작점 재발생
         }
     }
+    EndPrimitive();  // 루프 종료 후 마지막 프리미티브 종료
 
-    // Close the top of the extrusion
-    for (int i = 0; i < 3; i++) 
-    {
+    // 상단 삼각형
+    for (int i = 0; i < 3; ++i) {
+        gl_Position = gl_in[i].gl_Position + vec4(normal * uExtrudeFactor, 0.0);
         fTextureCoordinates = vTextureCoordinates[i];
-        fHeight = 1.0;
-        gl_Position = extrudedVertices[i];
+        fLightIntensity = 1.0;
         EmitVertex();
     }
-
-    // Emit the last vertex to complete the top triangle
     EndPrimitive();
 }

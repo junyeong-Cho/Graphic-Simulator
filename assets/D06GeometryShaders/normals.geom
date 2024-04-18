@@ -2,36 +2,30 @@
 layout(triangles) in;
 layout(line_strip, max_vertices = 6) out;
 
-in vec3 vNormal[];
+in vec3 vNormals[];
+out vec3 fColor;
 
 uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjection;
-uniform float uNormalLength;  // A uniform to control the length of the normal lines
+uniform float uNormalLength = 0.1;  // 법선의 길이, 필요에 따라 조정 가능
 
-void main() {
-    vec3 normalEnd;
-    vec4 worldSpacePos;
-    vec4 clipSpaceNormalEnd;
+void main() 
+{
+    vec3 normalColor = vec3(0.0, 0.0, 0.0);  // 법선 색상: 빨간색
 
     for (int i = 0; i < 3; i++) 
     {
-        // Convert vertex position to world space
-        worldSpacePos = uModelMatrix * vec4(gl_in[i].gl_Position.xyz, 1.0);
-        normalEnd = worldSpacePos.xyz + vNormal[i] * uNormalLength;
+        vec4 worldPosition = uModelMatrix * gl_in[i].gl_Position;
+        vec3 normal = normalize(mat3(uModelMatrix) * vNormals[i]) * uNormalLength;
 
-        // Convert the end of the normal to clip space
-        clipSpaceNormalEnd = uProjection * uViewMatrix * vec4(normalEnd, 1.0);
-
-        // Emit the position of the vertex
-        gl_Position = uProjection * uViewMatrix * worldSpacePos;
+        // 버텍스 위치에서 법선 방향으로 선을 그립니다.
+        gl_Position = worldPosition;
+        fColor = normalColor;
         EmitVertex();
 
-        // Emit the position of the normal's end
-        gl_Position = clipSpaceNormalEnd;
+        gl_Position = worldPosition + vec4(normal, 0.0);
+        fColor = normalColor;
         EmitVertex();
 
-        // Finish current line strip segment
         EndPrimitive();
     }
 }

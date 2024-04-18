@@ -177,6 +177,8 @@ namespace demos
         GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         const auto      angle = (autoRotate) ? glm::radians(static_cast<float>(environment::ElapsedTime) * 35.0f) : rotationAngle;
         const glm::mat4 r     = glm::rotate(glm::mat4(1.0f), angle, glm::vec3{ 1, 1, 0 });
+
+
         if (currentMaterial == Materials::Normals)
         {
             drawSceneObjects(r, materials[Materials::Wireframe]);
