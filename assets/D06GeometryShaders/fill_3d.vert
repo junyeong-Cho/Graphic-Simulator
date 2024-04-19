@@ -9,17 +9,17 @@ uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjection;
 
-out vec3 vNormals;
-out vec2 vTextureCoordinates;
+out vec3 vPosition;
+out vec3 vNormal;
 out vec4 vColor;
 
 void main()
 {
-    mat3 normalMatrix = transpose(inverse(mat3(uModelMatrix)));
-    vNormals          = normalMatrix * aVertexNormal;
-    
-    vColor = vec4(abs(aVertexNormal), 1.0);
-    vTextureCoordinates = aVertexTextureCoordinates;
+    vPosition = vec3(uModelMatrix * vec4(aVertexPosition, 1.0));
+    gl_Position = vec4(vPosition, 1.0);
 
-    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
+    vNormal = normalize(mat3(uModelMatrix) * aVertexNormal);
+
+    vColor = vec4(abs(normalize(mat3(uModelMatrix) * aVertexNormal)), 1.0);
+
 }

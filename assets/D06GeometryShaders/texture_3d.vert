@@ -5,16 +5,18 @@ layout(location = 0) in vec3 aVertexPosition;
 layout(location = 1) in vec3 aVertexNormal;
 layout(location = 2) in vec2 aVertexTextureCoordinates;
 
-out vec2 vTextureCoordinates;
+out vec3 vPosition;
 out vec3 vNormals;
+out vec2 vTextureCoordinates;
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjection;
 
-void main()
+void main() 
 {
-    gl_Position         = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
+    vPosition = vec3(uModelMatrix * vec4(aVertexPosition, 1.0));
+    vNormals = normalize(mat3(uModelMatrix) * aVertexNormal);
     vTextureCoordinates = aVertexTextureCoordinates;
-    vNormals            = aVertexNormal;
+    gl_Position = uProjection * uViewMatrix * vec4(vPosition, 1.0);
 }

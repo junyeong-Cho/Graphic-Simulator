@@ -1,75 +1,85 @@
 #version 300 es
+precision highp float;
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 14) out;
+layout(triangle_strip, max_vertices = 18) out;
 
-in vec2 vTextureCoordinates[];
-in vec3 vNormals[];
+in vec3 vPosition[3];
+in vec3 vNormals[3];
+in vec2 vTextureCoordinates[3];
 
 out vec2 fTextureCoordinates;
 out float fLightIntensity;
 
-uniform mat4 uModelMatrix;
 uniform float uExtrudeFactor;
 uniform bool uFlat;
+uniform mat4 uProjection;
+uniform mat4 uViewMatrix;
 
-void main() {
+void main() 
+{
     vec3 normal;
-    if (uFlat) {
-        // 평면 셰이딩에서 사용되는 법선
-        vec3 edge1 = gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz;
-        vec3 edge2 = gl_in[2].gl_Position.xyz - gl_in[0].gl_Position.xyz;
+    if (uFlat) 
+    {
+        // Compute flat normal from triangle vertices
+        vec3 edge1 = vPosition[1] - vPosition[0];
+        vec3 edge2 = vPosition[2] - vPosition[0];
         normal = normalize(cross(edge1, edge2));
-    } else {
-        // 버텍스 정상에 기반한 평활 셰이딩
-        normal = normalize((vNormals[0] + vNormals[1] + vNormals[2]) / 3.0);
-    }
+    } 
 
-    // 기본 삼각형 복제
-    for (int i = 0; i < 3; ++i) {
-        gl_Position = gl_in[i].gl_Position;
+    // Base triangle
+    for (int i = 0; i < 3; i++) 
+    {
+        gl_Position = uProjection * uViewMatrix * vec4(vPosition[i], 1.0);
         fTextureCoordinates = vTextureCoordinates[i];
-        fLightIntensity = 0.0; // 기본 위치, 색상은 검은색
+        fLightIntensity = 0.0;  // Base is dark
         EmitVertex();
     }
     EndPrimitive();
 
-    // 측면 삼각형 생성
-    for (int i = 0; i < 3; ++i) {
+    // Sides (extruded as triangle strip)
+    for (int i = 0; i < 3; i++) 
+    {
         int next = (i + 1) % 3;
-
-        // 원래 위치
-        gl_Position = gl_in[i].gl_Position;
+    
+        // Determine extrusion direction for the current vertex
+        vec3 currentExtrudeDirection = uFlat ? normal : normalize(vNormals[i]);
+        vec3 nextExtrudeDirection    = uFlat ? normal : normalize(vNormals[next]);
+    
+        // Original vertex i
+        gl_Position = uProjection * uViewMatrix * vec4(vPosition[i], 1.0);
         fTextureCoordinates = vTextureCoordinates[i];
-        fLightIntensity = 0.0;
+        fLightIntensity = (uExtrudeFactor == 0.0) ? 1.0 : 0.0; // If extrude factor is 0, use light intensity for top
         EmitVertex();
 
-        // extrude 위치
-        gl_Position = gl_in[i].gl_Position + vec4(normal * uExtrudeFactor, 0.0);
+        // Extruded vertex i
+        gl_Position = uProjection * uViewMatrix * vec4(vPosition[i] + currentExtrudeDirection * max(uExtrudeFactor, 0.001), 1.0);
         fTextureCoordinates = vTextureCoordinates[i];
-        fLightIntensity = 1.0; // extrude 위치, 색상은 밝은색
+        fLightIntensity = 1.0;  // Top is light
         EmitVertex();
 
-        // 다음 원래 위치
-        gl_Position = gl_in[next].gl_Position;
+        // Original vertex next 
+        gl_Position = uProjection * uViewMatrix * vec4(vPosition[next], 1.0);
         fTextureCoordinates = vTextureCoordinates[next];
-        fLightIntensity = 0.0;
+        fLightIntensity = (uExtrudeFactor == 0.0) ? 1.0 : 0.0; // If extrude factor is 0, use light intensity for top
         EmitVertex();
-
-        // 다음 extrude 위치
-        gl_Position = gl_in[next].gl_Position + vec4(normal * uExtrudeFactor, 0.0);
+    
+        // Extruded vertex next
+        gl_Position = uProjection * uViewMatrix * vec4(vPosition[next] + nextExtrudeDirection * max(uExtrudeFactor, 0.001), 1.0);
         fTextureCoordinates = vTextureCoordinates[next];
-        fLightIntensity = 1.0;
+        fLightIntensity = 1.0;  
         EmitVertex();
-
-        EndPrimitive();
     }
 
-    // 윗면 삼각형
-    for (int i = 0; i < 3; ++i) {
-        gl_Position = gl_in[i].gl_Position + vec4(normal * uExtrudeFactor, 0.0);
+    // Close the strip with the first two vertices to form a loop
+    EndPrimitive();
+
+    // Top triangle
+    for (int i = 0; i < 3; i++) 
+    {
+        gl_Position = uProjection * uViewMatrix * vec4(vPosition[i] + (uFlat ? normal : normalize(vNormals[i])) * max(uExtrudeFactor, 0.001), 1.0);
         fTextureCoordinates = vTextureCoordinates[i];
         fLightIntensity = 1.0;
         EmitVertex();
-    }
+    }   
     EndPrimitive();
 }
