@@ -14,6 +14,7 @@
 #include "D04ToonShading.hpp"
 #include "D05ShadowMapping.hpp"
 #include "D06GeometryShaders.hpp"
+#include "D07TessellationShaders.hpp"
 
 
 #include <algorithm>
@@ -35,6 +36,7 @@ namespace demos
             case Demos::ToonShading:      return new D04ToonShading();
             case Demos::ShadowMapping:    return new D05ShadowMapping();    
             case Demos::GeometryShaders:  return new D06GeometryShaders();
+            case Demos::TessellationShaders: return new D07TessellationShaders();
             default: throw std::runtime_error{ "Tried to create a demo we don't have yet...\n" }; break;
         }
     }
@@ -48,6 +50,7 @@ namespace demos
 			{"toon",          Demos::ToonShading},
 			{"shadow",        Demos::ShadowMapping},
             {"geom",          Demos::GeometryShaders},
+            {"tess",          Demos::TessellationShaders},
         };
         const auto to_lower = [](std::string_view s)
         {

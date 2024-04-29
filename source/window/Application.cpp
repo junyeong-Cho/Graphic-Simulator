@@ -539,6 +539,7 @@ namespace window
                 IF_CAN_DO_OPENGL(3, 2)
                 {
                     supported_demos.push_back(NameType{ "Geometry Shaders", Demos::GeometryShaders });
+                    supported_demos.push_back(NameType{ "Tessellation Shaders", Demos::TessellationShaders });
                 }
             }
 

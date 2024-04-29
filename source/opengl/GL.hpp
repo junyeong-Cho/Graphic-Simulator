@@ -94,37 +94,37 @@ namespace GL
     void           LinkProgram(GLuint program SOURCE_LOCATION);
     void           PolygonOffset(GLfloat factor, GLfloat units SOURCE_LOCATION);
     void           ShaderSource(GLuint shader, GLsizei count, const GLchar** string, const GLint* length SOURCE_LOCATION);
-    void           TexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* data SOURCE_LOCATION);
-    void           TexParameterfv(GLenum target, GLenum pname, const GLfloat* params SOURCE_LOCATION);
-    void           TexParameteri(GLenum target, GLenum pname, GLint param SOURCE_LOCATION);
-    void           Uniform1f(GLint location, GLfloat v0 SOURCE_LOCATION);
-    void           Uniform1i(GLint location, GLint v0 SOURCE_LOCATION);
-    void           Uniform1ui(GLint location, GLuint v0 SOURCE_LOCATION);
-    void           Uniform2f(GLint location, GLfloat v0, GLfloat v1 SOURCE_LOCATION);
-    void           Uniform2fv(GLint location, GLsizei count, const GLfloat* value SOURCE_LOCATION);
-    void           Uniform2i(GLint location, GLint v0, GLint v1 SOURCE_LOCATION);
-    void           Uniform2ui(GLint location, GLuint v0, GLuint v1 SOURCE_LOCATION);
-    void           Uniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2 SOURCE_LOCATION);
-    void           Uniform3fv(GLint location, GLsizei count, const GLfloat* value SOURCE_LOCATION);
-    void           Uniform3i(GLint location, GLint v0, GLint v1, GLint v2 SOURCE_LOCATION);
-    void           Uniform3ui(GLint location, GLuint v0, GLuint v1, GLuint v2 SOURCE_LOCATION);
-    void           Uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3 SOURCE_LOCATION);
-    void           Uniform4fv(GLint location, GLsizei count, const GLfloat* value SOURCE_LOCATION);
-    void           Uniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3 SOURCE_LOCATION);
-    void           Uniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3 SOURCE_LOCATION);
-    void           UniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
-    void           UseProgram(GLuint program SOURCE_LOCATION);
-    void           ValidateProgram(GLuint program SOURCE_LOCATION);
-    void           VertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer SOURCE_LOCATION);
-    void           Viewport(GLint x, GLint y, GLsizei width, GLsizei height SOURCE_LOCATION);
+    void TexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* data SOURCE_LOCATION);
+    void TexParameterfv(GLenum target, GLenum pname, const GLfloat* params SOURCE_LOCATION);
+    void TexParameteri(GLenum target, GLenum pname, GLint param SOURCE_LOCATION);
+    void Uniform1f(GLint location, GLfloat v0 SOURCE_LOCATION);
+    void Uniform1i(GLint location, GLint v0 SOURCE_LOCATION);
+    void Uniform1ui(GLint location, GLuint v0 SOURCE_LOCATION);
+    void Uniform2f(GLint location, GLfloat v0, GLfloat v1 SOURCE_LOCATION);
+    void Uniform2fv(GLint location, GLsizei count, const GLfloat* value SOURCE_LOCATION);
+    void Uniform2i(GLint location, GLint v0, GLint v1 SOURCE_LOCATION);
+    void Uniform2ui(GLint location, GLuint v0, GLuint v1 SOURCE_LOCATION);
+    void Uniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2 SOURCE_LOCATION);
+    void Uniform3fv(GLint location, GLsizei count, const GLfloat* value SOURCE_LOCATION);
+    void Uniform3i(GLint location, GLint v0, GLint v1, GLint v2 SOURCE_LOCATION);
+    void Uniform3ui(GLint location, GLuint v0, GLuint v1, GLuint v2 SOURCE_LOCATION);
+    void Uniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3 SOURCE_LOCATION);
+    void Uniform4fv(GLint location, GLsizei count, const GLfloat* value SOURCE_LOCATION);
+    void Uniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3 SOURCE_LOCATION);
+    void Uniform4ui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3 SOURCE_LOCATION);
+    void UniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value SOURCE_LOCATION);
+    void UseProgram(GLuint program SOURCE_LOCATION);
+    void ValidateProgram(GLuint program SOURCE_LOCATION);
+    void VertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer SOURCE_LOCATION);
+    void Viewport(GLint x, GLint y, GLsizei width, GLsizei height SOURCE_LOCATION);
 
 
     // Opengl Version 3.0
@@ -137,8 +137,13 @@ namespace GL
     void   GenFramebuffers(GLsizei n, GLuint* framebuffers SOURCE_LOCATION);
     void   GenVertexArrays(GLsizei n, GLuint* arrays SOURCE_LOCATION);
 
-    // Opengl Version 4.2 or Opengl ES 3.0
+
+    // Opengl ES 3.0 or Opengl Version 4.2
     void TexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height SOURCE_LOCATION);
+
+
+    // Opengl Version 4.0
+    void PatchParameteri(GLenum pname, GLint value SOURCE_LOCATION);
 
 
     // Opengl Version 4.5
@@ -156,11 +161,12 @@ namespace GL
     void   TextureParameterfv(GLuint texture, GLenum pname, const GLfloat* paramtexture SOURCE_LOCATION);
     void   TextureParameteri(GLuint texture, GLenum pname, GLint param SOURCE_LOCATION);
     void   TextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height SOURCE_LOCATION);
-    void   TextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels SOURCE_LOCATION);
-    void   VertexArrayAttribBinding(GLuint vaobj, GLuint attribindex, GLuint bindingindex SOURCE_LOCATION);
-    void   VertexArrayAttribFormat(GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset SOURCE_LOCATION);
-    void   VertexArrayElementBuffer(GLuint vaobj, GLuint buffer SOURCE_LOCATION);
-    void   VertexArrayVertexBuffer(GLuint vaobj, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride SOURCE_LOCATION);
+    void
+        TextureSubImage2D(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels SOURCE_LOCATION);
+    void VertexArrayAttribBinding(GLuint vaobj, GLuint attribindex, GLuint bindingindex SOURCE_LOCATION);
+    void VertexArrayAttribFormat(GLuint vaobj, GLuint attribindex, GLint size, GLenum type, GLboolean normalized, GLuint relativeoffset SOURCE_LOCATION);
+    void VertexArrayElementBuffer(GLuint vaobj, GLuint buffer SOURCE_LOCATION);
+    void VertexArrayVertexBuffer(GLuint vaobj, GLuint bindingindex, GLuint buffer, GLintptr offset, GLsizei stride SOURCE_LOCATION);
 
 
 }

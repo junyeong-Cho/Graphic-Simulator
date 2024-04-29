@@ -22,8 +22,8 @@
 #    include <source_location>
 #    define VOID_SOURCE_LOCATION const std::source_location caller_location
 #    define SOURCE_LOCATION      , VOID_SOURCE_LOCATION
-#    define glCheck(expression)                                                                                                                                                                        \
-        expression;                                                                                                                                                                                    \
+#    define glCheck(expression)                                                                                                                                                    \
+        expression;                                                                                                                                                                \
         glCheckError(caller_location.file_name(), caller_location.line(), caller_location.function_name(), #expression)
 
 namespace
@@ -538,6 +538,11 @@ namespace GL
     }
 
 #if !defined(OPENGL_ES3_ONLY)
+
+    void PatchParameteri(GLenum pname, GLint value SOURCE_LOCATION)
+    {
+        glCheck(glPatchParameteri(pname, value));
+    }
 
     GLenum CheckNamedFramebufferStatus(GLuint framebuffer, GLenum target SOURCE_LOCATION)
     {

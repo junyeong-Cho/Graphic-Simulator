@@ -11,6 +11,7 @@ set(SOURCE_CODE
     demos/D04ToonShading.hpp demos/D04ToonSHading.cpp
     demos/D05ShadowMapping.hpp demos/D05ShadowMapping.cpp
     demos/D06GeometryShaders.hpp demos/D06GeometryShaders.cpp
+    demos/D07TessellationSHaders.hpp demos/D07TessellationShaders.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
