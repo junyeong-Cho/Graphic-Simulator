@@ -187,6 +187,15 @@ namespace demos
              * if drawing the triangles shape use patch size of 3 otherwise use size of 4
              * GL::PatchParameteri - https://docs.gl/gl4/glPatchParameter
              */
+            if (shape == Tessellation::Shape::triangles)
+            {
+                GL::PatchParameteri(GL_PATCH_VERTICES, 3); // Set patch size for triangles
+            }
+            else
+            {
+                GL::PatchParameteri(GL_PATCH_VERTICES, 4); // Set patch size for quads and isolines
+            }
+
         }
 #endif
         const auto shape_index = static_cast<size_t>(shape);
@@ -232,5 +241,6 @@ namespace demos
          *                      prim pattern of Patches
          * Save into meshes[Tessellation::Shape::isolines]
          */
+
     }
 }
