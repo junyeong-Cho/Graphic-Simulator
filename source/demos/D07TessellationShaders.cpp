@@ -242,5 +242,96 @@ namespace demos
          * Save into meshes[Tessellation::Shape::isolines]
          */
 
+        // Quad Mesh
+        {
+            std::array<glm::vec3, 4> positions = 
+            {
+                glm::vec3{-1, 0, -1},
+                glm::vec3{-1, 0,  1},
+                glm::vec3{ 1, 0, -1},
+                glm::vec3{ 1, 0,  1}
+            };
+            GLVertexBuffer quad_vb;
+            quad_vb.SetData(positions.data(), positions.size() * sizeof(glm::vec3));
+
+            GLIndexBuffer         quad_ib;
+            std::array<GLuint, 4> indices = { 0, 1, 2, 3 };
+            quad_ib.SetData(indices.data(), indices.size() * sizeof(GLuint), GLIndexElement::UInt);
+
+            GLAttributeLayout layout
+            {
+                GLAttributeLayout::Float,
+                GLAttributeLayout::NumComponents::_3,
+                0, // Layout location
+                GL_FALSE,
+                0, // Offset
+                0  // Stride
+            };
+
+            meshes[Tessellation::Shape::quads] = GLVertexArray(GLPrimitive::Patches);
+            meshes[Tessellation::Shape::quads].AddVertexBuffer(std::move(quad_vb), { layout });
+            meshes[Tessellation::Shape::quads].SetIndexBuffer(std::move(quad_ib));
+        }
+
+        // Triangle Mesh
+        {
+            std::array<glm::vec3, 3> positions = 
+            {
+                glm::vec3{-1, 0, -1},
+                glm::vec3{-1, 0,  1},
+                glm::vec3{ 1, 0, -1}
+            };
+            GLVertexBuffer tri_vb;
+            tri_vb.SetData(positions.data(), positions.size() * sizeof(glm::vec3));
+
+            GLIndexBuffer         tri_ib;
+            std::array<GLuint, 3> indices = { 0, 1, 2 };
+            tri_ib.SetData(indices.data(), indices.size() * sizeof(GLuint), GLIndexElement::UInt);
+
+            GLAttributeLayout layout
+            {
+                GLAttributeLayout::Float,
+                GLAttributeLayout::NumComponents::_3,
+                0, // Layout location
+                GL_FALSE,
+                0, // Offset
+                0  // Stride
+            };
+
+            meshes[Tessellation::Shape::triangles] = GLVertexArray(GLPrimitive::Patches);
+            meshes[Tessellation::Shape::triangles].AddVertexBuffer(std::move(tri_vb), { layout });
+            meshes[Tessellation::Shape::triangles].SetIndexBuffer(std::move(tri_ib));
+        }
+
+        // Line Mesh
+        {
+            std::array<glm::vec3, 4> positions = 
+            {
+                glm::vec3{-1, 0, -1},
+                glm::vec3{-1, 0,  1},
+                glm::vec3{ 1, 0, -1},
+                glm::vec3{ 1, 0,  1}
+            };
+            GLVertexBuffer line_vb;
+            line_vb.SetData(positions.data(), positions.size() * sizeof(glm::vec3));
+
+            GLIndexBuffer         line_ib;
+            std::array<GLuint, 4> indices = { 0, 1, 2, 3 };
+            line_ib.SetData(indices.data(), indices.size() * sizeof(GLuint), GLIndexElement::UInt);
+
+            GLAttributeLayout layout
+            {
+                GLAttributeLayout::Float,
+                GLAttributeLayout::NumComponents::_3,
+                0, // Layout location
+                GL_FALSE,
+                0, // Offset
+                0  // Stride
+            };
+
+            meshes[Tessellation::Shape::isolines] = GLVertexArray(GLPrimitive::Patches);
+            meshes[Tessellation::Shape::isolines].AddVertexBuffer(std::move(line_vb), { layout });
+            meshes[Tessellation::Shape::isolines].SetIndexBuffer(std::move(line_ib));
+        }
     }
 }
