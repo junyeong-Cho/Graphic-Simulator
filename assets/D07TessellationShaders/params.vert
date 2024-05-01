@@ -1,15 +1,20 @@
-#version 300 es
+#version 450
 
 precision highp float;
 
-layout(location = 0) in vec3 aVertexposition;
-layout(location = 1) in vec3 aVertexNormal;
+layout(location = 0) in vec3 aVertexPosition;
 
 uniform mat4 uProjection;
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 
+out vec3 vPosition;
+
 void main()
 {
-    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexposition, 1.0);
+    vec4 worldPosition = uModelMatrix * vec4(aVertexPosition, 1.0);
+
+    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
+
+    vPosition = vec3(uModelMatrix * vec4(aVertexPosition, 1.0));
 }
