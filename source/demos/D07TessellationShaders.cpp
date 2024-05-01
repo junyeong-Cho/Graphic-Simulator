@@ -189,11 +189,15 @@ namespace demos
              */
             if (shape == Tessellation::Shape::triangles)
             {
-                GL::PatchParameteri(GL_PATCH_VERTICES, 3); // Set patch size for triangles
+                GL::PatchParameteri(GL_PATCH_VERTICES, 3); // 삼각형 패치에는 3개의 정점 필요
+            }
+            else if (shape == Tessellation::Shape::isolines)
+            {
+                GL::PatchParameteri(GL_PATCH_VERTICES, 2); // isolines에는 2개의 정점 필요
             }
             else
             {
-                GL::PatchParameteri(GL_PATCH_VERTICES, 4); // Set patch size for quads and isolines
+                GL::PatchParameteri(GL_PATCH_VERTICES, 4); // 나머지(quads)는 4개의 정점
             }
 
         }
@@ -251,7 +255,7 @@ namespace demos
                 glm::vec3{ 1.0f, 0.0f, -1.0f}, // bottom right
                 glm::vec3{ 1.0f, 0.0f,  1.0f}  // top right
             };
-            const std::array quadIndices = { 0u, 1u, 2u, 2u, 1u, 3u };
+            const std::array quadIndices = { 0u, 1u, 2u, 3u };
 
             GLVertexBuffer quadVertexBuffer(std::span{ quadVertices });
             GLIndexBuffer  quadIndexBuffer(quadIndices);

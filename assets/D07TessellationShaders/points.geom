@@ -1,4 +1,4 @@
-#version 300 es
+#version 450
 
 layout(lines) in;
 layout(points, max_vertices = 128) out;
