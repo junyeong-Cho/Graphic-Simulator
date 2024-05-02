@@ -8,13 +8,13 @@ uniform mat4 uProjection;
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 
-out vec3 vPosition;
+out vec3 vPosition; 
 
 void main()
 {
-    vec4 worldPosition = uModelMatrix * vec4(aVertexPosition, 1.0);
+    vec4 worldPosition = uModelMatrix * vec4(aVertexPosition, 1.0); 
 
-    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aVertexPosition, 1.0);
+    gl_Position = uProjection * uViewMatrix * worldPosition; 
 
-    vPosition = vec3(uModelMatrix * vec4(aVertexPosition, 1.0));
+    vPosition = vec3(worldPosition); 
 }

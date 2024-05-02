@@ -9,7 +9,7 @@ void main()
 {
     vec3 start = tePosition[0];
     vec3 end   = tePosition[1];
-    vec3 diff  = (end - start) / 127.0;
+    vec3 diff  = (end - start) / 126.0;
 
     gl_PointSize = 6.0;
     gl_Position = vec4(start, 1.0);

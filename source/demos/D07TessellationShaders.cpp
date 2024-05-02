@@ -246,87 +246,56 @@ namespace demos
          * Save into meshes[Tessellation::Shape::isolines]
          */
 
-        // quad mesh
+       GLAttributeLayout position;
+        GLAttributeLayout normal;
+        GLAttributeLayout uv;
+        graphics::describe_meshvertex_layout(position, normal, uv);
+
+        // Quad vertices
+        std::vector<glm::vec3> quadVertices = 
         {
-            const std::array quadVertices = 
-            {
-                glm::vec3{-1.0f, 0.0f, -1.0f}, // bottom left
-                glm::vec3{-1.0f, 0.0f,  1.0f}, // top left
-                glm::vec3{ 1.0f, 0.0f, -1.0f}, // bottom right
-                glm::vec3{ 1.0f, 0.0f,  1.0f}  // top right
-            };
-            const std::array quadIndices = { 0u, 1u, 2u, 3u };
+            {-1.0f, 0.0f, -1.0f},
+            {-1.0f, 0.0f,  1.0f},
+            { 1.0f, 0.0f, -1.0f},
+            { 1.0f, 0.0f,  1.0f}
+        };
 
-            GLVertexBuffer quadVertexBuffer(std::span{ quadVertices });
-            GLIndexBuffer  quadIndexBuffer(quadIndices);
+        // Quad indices
+        std::vector<unsigned int> quadIndices = { 0, 1, 2, 3 };
 
-            GLAttributeLayout positionLayout;
-            positionLayout.component_type         = GLAttributeLayout::Float;
-            positionLayout.component_dimension    = GLAttributeLayout::_3;
-            positionLayout.normalized             = false;
-            positionLayout.vertex_layout_location = 0;
-            positionLayout.stride                 = sizeof(glm::vec3);
-            positionLayout.offset                 = 0;
-            positionLayout.relative_offset        = 0;
+        // Save into Triangle meshes
+        meshes[Tessellation::Shape::quads].SetPrimitivePattern(GLPrimitive::Patches);
+        meshes[Tessellation::Shape::quads].AddVertexBuffer(GLVertexBuffer(std::span{ quadVertices }), { position, normal, uv });
+        meshes[Tessellation::Shape::quads].SetIndexBuffer(GLIndexBuffer(std::span{ quadIndices }));
 
-            meshes[Tessellation::Shape::quads].AddVertexBuffer(std::move(quadVertexBuffer), { positionLayout });
-            meshes[Tessellation::Shape::quads].SetIndexBuffer(std::move(quadIndexBuffer));
-            meshes[Tessellation::Shape::quads].SetPrimitivePattern(GLPrimitive::Patches);
-        }
+        // Triangle vertices
+        std::vector<glm::vec3> triangleVertices = {
+            {-1.0f, 0.0f, -1.0f},
+            {-1.0f, 0.0f,  1.0f},
+            { 1.0f, 0.0f, -1.0f}
+        };
+        // Triangle indices
+        std::vector<unsigned int> triangleIndices = { 0, 1, 2 };
 
-        // triangle mesh
-        {
-            const std::array triVertices = 
-            {
-				glm::vec3{-1.0f, 0.0f, -1.0f}, // bottom left
-				glm::vec3{-1.0f, 0.0f,  1.0f}, // top left
-				glm::vec3{ 1.0f, 0.0f, -1.0f}  // bottom right
-			};
-			const std::array triIndices = { 0u, 1u, 2u };
+        // Save into Triangle meshes
+        meshes[Tessellation::Shape::triangles].SetPrimitivePattern(GLPrimitive::Patches);
+        meshes[Tessellation::Shape::triangles].AddVertexBuffer(GLVertexBuffer(std::span{ triangleVertices }), { position, normal, uv });
+        meshes[Tessellation::Shape::triangles].SetIndexBuffer(GLIndexBuffer(std::span{ triangleIndices }));
 
-			GLVertexBuffer triVertexBuffer(std::span{ triVertices });
-			GLIndexBuffer  triIndexBuffer(triIndices);
+        // Quad vertices
+        std::vector<glm::vec3> isolinesVertices = {
+            {-1.0f, 0.0f, -1.0f},
+            {-1.0f, 0.0f,  1.0f},
+            { 1.0f, 0.0f, -1.0f},
+            { 1.0f, 0.0f,  1.0f}
+        };
 
-			GLAttributeLayout positionLayout;
-			positionLayout.component_type         = GLAttributeLayout::Float;
-			positionLayout.component_dimension    = GLAttributeLayout::_3;
-			positionLayout.normalized             = false;
-			positionLayout.vertex_layout_location = 0;
-			positionLayout.stride                 = sizeof(glm::vec3);
-			positionLayout.offset                 = 0;
-			positionLayout.relative_offset        = 0;
+        // Quad indices
+        std::vector<unsigned int> isolinesIndices = { 0, 1, 2, 3 };
 
-			meshes[Tessellation::Shape::triangles].AddVertexBuffer(std::move(triVertexBuffer), { positionLayout });
-			meshes[Tessellation::Shape::triangles].SetIndexBuffer(std::move(triIndexBuffer));
-			meshes[Tessellation::Shape::triangles].SetPrimitivePattern(GLPrimitive::Patches);
-		}
-
-        // isolines mesh
-        {
-            const std::array isolineVertices = 
-            {
-                glm::vec3{-1.0f, 0.0f, -1.0f}, // point 1
-                glm::vec3{-1.0f, 0.0f,  1.0f}, // point 2
-                glm::vec3{ 1.0f, 0.0f, -1.0f}, // point 3
-                glm::vec3{ 1.0f, 0.0f,  1.0f}  // point 4
-            };
-            const std::array isolineIndices = { 0u, 1u, 2u, 3u };
-
-            GLVertexBuffer isolineVertexBuffer(std::span{ isolineVertices });
-            GLIndexBuffer  isolineIndexBuffer(isolineIndices);
-
-            GLAttributeLayout positionLayout;
-            positionLayout.component_type         = GLAttributeLayout::Float;
-            positionLayout.component_dimension    = GLAttributeLayout::_3;
-            positionLayout.normalized             = false;
-            positionLayout.vertex_layout_location = 0;
-            positionLayout.stride                 = sizeof(glm::vec3);
-            positionLayout.offset                 = 0;
-            positionLayout.relative_offset        = 0;
-
-            meshes[Tessellation::Shape::isolines].AddVertexBuffer(std::move(isolineVertexBuffer), { positionLayout });
-            meshes[Tessellation::Shape::isolines].SetIndexBuffer(std::move(isolineIndexBuffer));
-            meshes[Tessellation::Shape::isolines].SetPrimitivePattern(GLPrimitive::Patches);
-        }
+        // Save into Triangle meshes
+        meshes[Tessellation::Shape::isolines].SetPrimitivePattern(GLPrimitive::Patches);
+        meshes[Tessellation::Shape::isolines].AddVertexBuffer(GLVertexBuffer(std::span{ isolinesVertices }), { position, normal, uv });
+        meshes[Tessellation::Shape::isolines].SetIndexBuffer(GLIndexBuffer(std::span{ isolinesIndices }));
     }
 }

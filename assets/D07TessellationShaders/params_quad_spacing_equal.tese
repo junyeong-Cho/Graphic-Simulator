@@ -7,6 +7,10 @@ in vec3 tcPosition[];
 
 out vec3 tePosition;
 
+uniform mat4 uProjection;
+uniform mat4 uViewMatrix;
+uniform mat4 uModelMatrix;
+
 void main()
 {
     float u = gl_TessCoord.x;
@@ -16,6 +20,6 @@ void main()
     vec3 p1 = mix(tcPosition[3], tcPosition[2], u);
     tePosition = mix(p0, p1, v);
     
-    gl_Position = mix(mix(gl_in[0].gl_Position, gl_in[1].gl_Position, u),
-                      mix(gl_in[3].gl_Position, gl_in[2].gl_Position, u), v);
+    vec4 worldPosition = uModelMatrix * vec4(tePosition, 1.0);
+    gl_Position = uProjection * uViewMatrix * worldPosition;
 }
