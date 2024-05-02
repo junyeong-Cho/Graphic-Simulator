@@ -16,10 +16,13 @@ void main()
     float u = gl_TessCoord.x;
     float v = gl_TessCoord.y;
     
-    vec3 p0 = mix(tcPosition[0], tcPosition[1], u);
-    vec3 p1 = mix(tcPosition[3], tcPosition[2], u);
-    tePosition = mix(p0, p1, v);
+    // bilinearly interpolated object-space position
+    vec3 lowerPos = mix(tcPosition[0], tcPosition[1], u);
+    vec3 upperPos = mix(tcPosition[2], tcPosition[3], u);
+    vec3 position = mix(lowerPos, upperPos, v);
+
+    tePosition = position;
     
-    vec4 worldPosition = uModelMatrix * vec4(tePosition, 1.0);
-    gl_Position = uProjection * uViewMatrix * worldPosition;
+    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(position, 1.0);
+
 }

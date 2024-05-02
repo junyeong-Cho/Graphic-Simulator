@@ -13,6 +13,7 @@ uniform vec4 uOutsideTessellation;
 void main()
 {
     tcPosition[ID] = vPosition[ID];
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 
     if (ID == 0) 
     {

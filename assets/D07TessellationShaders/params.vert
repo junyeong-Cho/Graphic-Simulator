@@ -12,9 +12,10 @@ out vec3 vPosition;
 
 void main()
 {
-    vec4 worldPosition = uModelMatrix * vec4(aVertexPosition, 1.0); 
+    
+    // Transform the vertex position from model to world space.
+    vPosition = vec3(uModelMatrix * vec4(aVertexPosition, 1.0));
 
-    gl_Position = uProjection * uViewMatrix * worldPosition; 
-
-    vPosition = vec3(worldPosition); 
+    // Further transform the vertex position to clip space.
+    //gl_Position = uProjection * uViewMatrix * vec4(vPosition, 1.0);
 }

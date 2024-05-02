@@ -5,13 +5,17 @@ layout(line_strip, max_vertices = 6) out;
 
 in vec3 tePosition[];
 
+uniform mat4 uProjection;
+uniform mat4 uViewMatrix;
+uniform mat4 uModelMatrix;
+
 void main()
 {
     for(int i = 0; i < 3; i++)
     {
-        gl_Position = vec4(tePosition[i], 1.0);
+        gl_Position =  vec4(tePosition[i], 1.0);
         EmitVertex();
-        gl_Position = vec4(tePosition[(i + 1) % 3], 1.0);
+        gl_Position =  vec4(tePosition[(i + 1) % 3], 1.0);
         EmitVertex();
         
         EndPrimitive();

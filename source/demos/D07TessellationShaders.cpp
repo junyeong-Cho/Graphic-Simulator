@@ -189,15 +189,11 @@ namespace demos
              */
             if (shape == Tessellation::Shape::triangles)
             {
-                GL::PatchParameteri(GL_PATCH_VERTICES, 3); // 삼각형 패치에는 3개의 정점 필요
-            }
-            else if (shape == Tessellation::Shape::isolines)
-            {
-                GL::PatchParameteri(GL_PATCH_VERTICES, 2); // isolines에는 2개의 정점 필요
+                GL::PatchParameteri(GL_PATCH_VERTICES, 3); 
             }
             else
             {
-                GL::PatchParameteri(GL_PATCH_VERTICES, 4); // 나머지(quads)는 4개의 정점
+                GL::PatchParameteri(GL_PATCH_VERTICES, 4); 
             }
 
         }
@@ -246,56 +242,73 @@ namespace demos
          * Save into meshes[Tessellation::Shape::isolines]
          */
 
-       GLAttributeLayout position;
+        GLAttributeLayout position;
         GLAttributeLayout normal;
         GLAttributeLayout uv;
         graphics::describe_meshvertex_layout(position, normal, uv);
 
-        // Quad vertices
-        std::vector<glm::vec3> quadVertices = 
         {
-            {-1.0f, 0.0f, -1.0f},
-            {-1.0f, 0.0f,  1.0f},
-            { 1.0f, 0.0f, -1.0f},
-            { 1.0f, 0.0f,  1.0f}
-        };
+            GL::PatchParameteri(GL_PATCH_VERTICES, 4);
 
-        // Quad indices
-        std::vector<unsigned int> quadIndices = { 0, 1, 2, 3 };
+            // Quad vertices
+            std::vector<glm::vec3> quadVertices = {
+                {-1.0f, 0.0f, -1.0f},
+                {-1.0f, 0.0f,  1.0f},
+                { 1.0f, 0.0f, -1.0f},
+                { 1.0f, 0.0f,  1.0f}
+            };
 
-        // Save into Triangle meshes
-        meshes[Tessellation::Shape::quads].SetPrimitivePattern(GLPrimitive::Patches);
-        meshes[Tessellation::Shape::quads].AddVertexBuffer(GLVertexBuffer(std::span{ quadVertices }), { position, normal, uv });
-        meshes[Tessellation::Shape::quads].SetIndexBuffer(GLIndexBuffer(std::span{ quadIndices }));
+            // Quad indices
+            std::vector<unsigned int> quadIndices = { 0, 1, 2, 3 };
 
-        // Triangle vertices
-        std::vector<glm::vec3> triangleVertices = {
-            {-1.0f, 0.0f, -1.0f},
-            {-1.0f, 0.0f,  1.0f},
-            { 1.0f, 0.0f, -1.0f}
-        };
-        // Triangle indices
-        std::vector<unsigned int> triangleIndices = { 0, 1, 2 };
+            // Save into Quad
+            meshes[Tessellation::Shape::quads].SetPrimitivePattern(GLPrimitive::Patches);
+            meshes[Tessellation::Shape::quads].AddVertexBuffer(GLVertexBuffer(std::span{ quadVertices }), { position, normal, uv });
+            meshes[Tessellation::Shape::quads].SetIndexBuffer(GLIndexBuffer(std::span{ quadIndices }));
+        }
 
-        // Save into Triangle meshes
-        meshes[Tessellation::Shape::triangles].SetPrimitivePattern(GLPrimitive::Patches);
-        meshes[Tessellation::Shape::triangles].AddVertexBuffer(GLVertexBuffer(std::span{ triangleVertices }), { position, normal, uv });
-        meshes[Tessellation::Shape::triangles].SetIndexBuffer(GLIndexBuffer(std::span{ triangleIndices }));
 
-        // Quad vertices
-        std::vector<glm::vec3> isolinesVertices = {
-            {-1.0f, 0.0f, -1.0f},
-            {-1.0f, 0.0f,  1.0f},
-            { 1.0f, 0.0f, -1.0f},
-            { 1.0f, 0.0f,  1.0f}
-        };
+        {
+            GL::PatchParameteri(GL_PATCH_VERTICES, 3);
 
-        // Quad indices
-        std::vector<unsigned int> isolinesIndices = { 0, 1, 2, 3 };
+            // Triangle vertices
+            std::vector<glm::vec3> triangleVertices = 
+            {
+                {-1.0f, 0.0f, -1.0f},
+                {-1.0f, 0.0f,  1.0f},
+                { 1.0f, 0.0f, -1.0f}
+            };
+            // Triangle indices
+            std::vector<unsigned int> triangleIndices = { 0, 1, 2 };
 
-        // Save into Triangle meshes
-        meshes[Tessellation::Shape::isolines].SetPrimitivePattern(GLPrimitive::Patches);
-        meshes[Tessellation::Shape::isolines].AddVertexBuffer(GLVertexBuffer(std::span{ isolinesVertices }), { position, normal, uv });
-        meshes[Tessellation::Shape::isolines].SetIndexBuffer(GLIndexBuffer(std::span{ isolinesIndices }));
+            // Save into Triangle meshes
+            meshes[Tessellation::Shape::triangles].SetPrimitivePattern(GLPrimitive::Patches);
+            meshes[Tessellation::Shape::triangles].AddVertexBuffer(GLVertexBuffer(std::span{ triangleVertices }), { position, normal, uv });
+            meshes[Tessellation::Shape::triangles].SetIndexBuffer(GLIndexBuffer(std::span{ triangleIndices }));
+        }
+
+
+
+        {
+            GL::PatchParameteri(GL_PATCH_VERTICES, 4);
+
+            // Quad vertices
+            std::vector<glm::vec3> isolinesVertices = 
+            {
+                {-1.0f, 0.0f, -1.0f},
+                {-1.0f, 0.0f,  1.0f},
+                { 1.0f, 0.0f, -1.0f},
+                { 1.0f, 0.0f,  1.0f}
+            };
+
+            // Quad indices
+            std::vector<unsigned int> isolinesIndices = { 0, 1, 2, 3 };
+
+            // Save into Triangle meshes
+            meshes[Tessellation::Shape::isolines].SetPrimitivePattern(GLPrimitive::Patches);
+            meshes[Tessellation::Shape::isolines].AddVertexBuffer(GLVertexBuffer(std::span{ isolinesVertices }), { position, normal, uv });
+            meshes[Tessellation::Shape::isolines].SetIndexBuffer(GLIndexBuffer(std::span{ isolinesIndices }));
+        }
+
     }
 }
