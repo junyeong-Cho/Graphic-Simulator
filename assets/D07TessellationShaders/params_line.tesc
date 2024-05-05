@@ -1,11 +1,4 @@
 #version 450
-/**
- * \file params_line.tesc
- * \author jiminlim
- * \date 2024 Spring
- * \par CS250 Computer Graphics II
- * \copyright DigiPen Institute of Technology
- */
 
 layout (vertices = 4) out;
 

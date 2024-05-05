@@ -1,11 +1,5 @@
 #version 450
-/**
- * \file params_tri_spacing_equal.tese
- * \author jiminlim
- * \date 2024 Spring
- * \par CS250 Computer Graphics II
- * \copyright DigiPen Institute of Technology
- */
+
 layout (triangles , equal_spacing) in;
 
 uniform mat4 uModelMatrix;

@@ -181,12 +181,9 @@ namespace demos
         GL::Enable(GL_PROGRAM_POINT_SIZE);
         const auto material_index = static_cast<Materials::Type>(int(shape) * int(Tessellation::SpacingCount) + int(spacing));
         materials[material_index].ForceApplyAllSettings();
+        
 #if !defined(OPENGL_ES3_ONLY)
         {
-            /* TODO
-             * if drawing the triangles shape use patch size of 3 otherwise use size of 4
-             * GL::PatchParameteri - https://docs.gl/gl4/glPatchParameter
-             */
             if (shape == Tessellation::Shape::triangles)
             {
                 GL::PatchParameteri(GL_PATCH_VERTICES, 3); 
@@ -196,8 +193,9 @@ namespace demos
                 GL::PatchParameteri(GL_PATCH_VERTICES, 4); 
             }
 
-        }
+        }        
 #endif
+
         const auto shape_index = static_cast<size_t>(shape);
         meshes[shape_index].Use();
         GLDrawIndexed(meshes[shape_index]);
@@ -221,26 +219,7 @@ namespace demos
 
     void D07TessellationShaders::buildMeshes()
     {
-        /* TODO
-         * Create a quad mesh with positions  { -1, 0, -1 }, { -1, 0, 1 }, { 1, 0, -1 }, { 1, 0, 1 }
-         *                      index buffer of {0, 1, 2, 3}
-         *                      prim pattern of Patches
-         * Save into meshes[Tessellation::Shape::quads]
-         */
 
-        /* TODO
-         * Create a triangle mesh with positions  { -1, 0, -1 }, { -1, 0, 1 }, { 1, 0, -1 }
-         *                      index buffer of {0, 1, 2}
-         *                      prim pattern of Patches
-         * Save into meshes[Tessellation::Shape::triangles]
-         */
-
-        /* TODO
-         * Create an isolines mesh with positions  { -1, 0, -1 }, { -1, 0, 1 }, { 1, 0, -1 }, { 1, 0, 1 }
-         *                      index buffer of {0, 1, 2, 3}
-         *                      prim pattern of Patches
-         * Save into meshes[Tessellation::Shape::isolines]
-         */
 
      using graphics::MeshVertex;
         using graphics::SubMesh;
