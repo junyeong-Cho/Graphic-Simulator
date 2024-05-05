@@ -1,22 +1,27 @@
 #version 450
+/**
+ * \file params_line.tesc
+ * \author jiminlim
+ * \date 2024 Spring
+ * \par CS250 Computer Graphics II
+ * \copyright DigiPen Institute of Technology
+ */
 
-layout(vertices = 2) out;
+layout (vertices = 4) out;
 
-in vec3 vPosition[];
-out vec3 tcPosition[];
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjection;
 
 uniform vec4 uOutsideTessellation;
 
-#define ID gl_InvocationID
-
-void main()
-{
-    tcPosition[ID] = vPosition[ID];
+void main() {
+    
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 
-    if (ID == 0)
+    if(gl_InvocationID ==0)
     {
-        gl_TessLevelOuter[0] = uOutsideTessellation.x; 
-        gl_TessLevelOuter[1] = uOutsideTessellation.y; 
+        gl_TessLevelOuter[0] = uOutsideTessellation[0]; 
+        gl_TessLevelOuter[1] = uOutsideTessellation[1]; 
     }
 }

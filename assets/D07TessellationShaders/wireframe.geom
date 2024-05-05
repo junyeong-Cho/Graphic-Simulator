@@ -1,23 +1,30 @@
-#version 450
+#version 450 core
+precision highp float;
+
 
 layout(triangles) in;
 layout(line_strip, max_vertices = 6) out;
 
-in vec3 tePosition[];
-
-uniform mat4 uProjection;
-uniform mat4 uViewMatrix;
-uniform mat4 uModelMatrix;
+in vec3 tePosition[3];
+in vec3 tePatchDistance[3];
+out vec3 gFacetNormal;
+out vec3 gPatchDistance;
+out vec3 gTriDistance;
 
 void main()
 {
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 3; ++i)
     {
-        gl_Position =  vec4(tePosition[i], 1.0);
+        gl_Position = gl_in[i].gl_Position;
         EmitVertex();
-        gl_Position =  vec4(tePosition[(i + 1) % 3], 1.0);
+
+        int nextIndex = (i + 1) % 3;
+        gl_Position = gl_in[nextIndex].gl_Position;
         EmitVertex();
-        
-        EndPrimitive();
     }
+
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+
+    EndPrimitive();
 }

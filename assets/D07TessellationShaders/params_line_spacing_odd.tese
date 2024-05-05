@@ -1,20 +1,17 @@
 #version 450
 
-layout(isolines) in;
-layout(fractional_odd_spacing) in;
+layout (isolines, fractional_odd_spacing) in;
 
-in vec3 tcPosition[];
-out vec3 tePosition;
-
-uniform mat4 uProjection;
-uniform mat4 uViewMatrix;
 uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjection;
 
-void main()
-{
+void main() {
     float u = gl_TessCoord.x;
-    
-    tePosition = mix(tcPosition[0], tcPosition[1], u);
-    vec4 worldPosition = uModelMatrix * vec4(tePosition, 1.0);
-    gl_Position = uProjection * uViewMatrix * worldPosition;
+    float v = gl_TessCoord.y;
+
+    vec4 p0 = mix(gl_in[0].gl_Position, gl_in[1].gl_Position, u);
+    vec4 p1 = mix(gl_in[2].gl_Position, gl_in[3].gl_Position, u);
+
+    gl_Position = mix(p0, p1, v);
 }

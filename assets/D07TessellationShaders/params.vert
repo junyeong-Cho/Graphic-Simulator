@@ -17,5 +17,5 @@ void main()
     vPosition = vec3(uModelMatrix * vec4(aVertexPosition, 1.0));
 
     // Further transform the vertex position to clip space.
-    //gl_Position = uProjection * uViewMatrix * vec4(vPosition, 1.0);
+    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(vPosition, 1.0);
 }

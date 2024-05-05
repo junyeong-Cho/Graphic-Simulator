@@ -1,29 +1,31 @@
 #version 450
+/**
+ * \file params_quad.tesc
+ * \author jiminlim
+ * \date 2024 Spring
+ * \par CS250 Computer Graphics II
+ * \copyright DigiPen Institute of Technology
+ */
 
-layout(vertices = 4) out;
+layout (vertices = 4) out;
 
-in vec3 vPosition[];
-out vec3 tcPosition[];
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjection;
 
-uniform vec2 uInsideTessellation;
 uniform vec4 uOutsideTessellation;
+uniform vec2 uInsideTessellation;
 
-#define ID gl_InvocationID
+void main() {
+    
+    gl_TessLevelOuter[0] = uOutsideTessellation.x;
+    gl_TessLevelOuter[1] = uOutsideTessellation.y;
+    gl_TessLevelOuter[2] = uOutsideTessellation.z;
+    gl_TessLevelOuter[3] = uOutsideTessellation.w;
+    
+    gl_TessLevelInner[0] = uInsideTessellation.x;
+    gl_TessLevelInner[1] = uInsideTessellation.y;
 
-void main()
-{
-    tcPosition[ID] = vPosition[ID];
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 
-
-    if (ID == 0) 
-    {
-        gl_TessLevelInner[0] = uInsideTessellation.x;
-        gl_TessLevelInner[1] = uInsideTessellation.y;
-
-        gl_TessLevelOuter[0] = uOutsideTessellation.x;
-        gl_TessLevelOuter[1] = uOutsideTessellation.y;
-        gl_TessLevelOuter[2] = uOutsideTessellation.z;
-        gl_TessLevelOuter[3] = uOutsideTessellation.w;
-    }
 }
