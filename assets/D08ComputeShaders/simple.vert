@@ -1,4 +1,4 @@
-#version 450
+#version 300 es
 
 precision highp float;
 
@@ -14,6 +14,6 @@ out vec2 fTextureCoordinates;
 void main()
 {
     // Further transform the vertex position to clip space.
-    gl_Position = uProjection * vec4(vPosition, 1.0);
-    fTextureCoordinates = aVertexTextureCoordinates
+    gl_Position = uProjection * vec4(aVertexPosition, 1.0);
+    fTextureCoordinates = aVertexTextureCoordinates;
 }
