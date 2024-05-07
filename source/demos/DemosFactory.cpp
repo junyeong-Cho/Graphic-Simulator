@@ -15,6 +15,7 @@
 #include "D05ShadowMapping.hpp"
 #include "D06GeometryShaders.hpp"
 #include "D07TessellationShaders.hpp"
+#include "D08ComputeShaders.hpp"
 
 
 #include <algorithm>
@@ -30,13 +31,14 @@ namespace demos
         switch (the_demo)
         {
             case Demos::None:
-            case Demos::HelloQuad:        return new D01HelloQuad();
-            case Demos::ProceduralMeshes: return new D02ProceduralMeshes();
-            case Demos::Fog:              return new D03Fog();
-            case Demos::ToonShading:      return new D04ToonShading();
-            case Demos::ShadowMapping:    return new D05ShadowMapping();    
-            case Demos::GeometryShaders:  return new D06GeometryShaders();
+            case Demos::HelloQuad:           return new D01HelloQuad();
+            case Demos::ProceduralMeshes:    return new D02ProceduralMeshes();
+            case Demos::Fog:                 return new D03Fog();
+            case Demos::ToonShading:         return new D04ToonShading();
+            case Demos::ShadowMapping:       return new D05ShadowMapping();    
+            case Demos::GeometryShaders:     return new D06GeometryShaders();
             case Demos::TessellationShaders: return new D07TessellationShaders();
+            case Demos::ComputeShaders:      return new D08ComputeShaders();
             default: throw std::runtime_error{ "Tried to create a demo we don't have yet...\n" }; break;
         }
     }
@@ -51,6 +53,7 @@ namespace demos
 			{"shadow",        Demos::ShadowMapping},
             {"geom",          Demos::GeometryShaders},
             {"tess",          Demos::TessellationShaders},
+            { "comp",         Demos::ComputeShaders }
         };
         const auto to_lower = [](std::string_view s)
         {

@@ -24,6 +24,7 @@ namespace demos
         ShadowMapping,
         GeometryShaders,
         TessellationShaders,
+        ComputeShaders,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

@@ -540,6 +540,7 @@ namespace window
                 {
                     supported_demos.push_back(NameType{ "Geometry Shaders", Demos::GeometryShaders });
                     supported_demos.push_back(NameType{ "Tessellation Shaders", Demos::TessellationShaders });
+                    supported_demos.push_back(NameType{ "Compute Shaders", Demos::ComputeShaders });
                 }
             }
 

@@ -145,6 +145,12 @@ namespace GL
     // Opengl Version 4.0
     void PatchParameteri(GLenum pname, GLint value SOURCE_LOCATION);
 
+    // Opengl Version 4.2
+    void BindImageTexture(GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format SOURCE_LOCATION);
+    void MemoryBarrier(GLbitfield barriers SOURCE_LOCATION);
+
+    // Opengl 4.3
+    void DispatchCompute(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z SOURCE_LOCATION);
 
     // Opengl Version 4.5
     GLenum CheckNamedFramebufferStatus(GLuint framebuffer, GLenum target SOURCE_LOCATION);
