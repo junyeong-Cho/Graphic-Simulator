@@ -85,8 +85,7 @@ namespace demos
     {
         computeShaders[selectedComputeShader].Use();
 #if !defined(OPENGL_ES3_ONLY)
-        // TODO GL::BindImageTexture - https://docs.gl/gl4/glBindImageTexture
-        //  want to bind generatedTexture to the image2D uniform for writing
+        
         GL::BindImageTexture(0, generatedTexture.GetHandle(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
         switch (selectedComputeShader)
         {
@@ -102,12 +101,11 @@ namespace demos
             case Example::Count:
                 break;
         }
-        // TODO GL::DispatchCompute - https://docs.gl/gl4/glDispatchCompute
+        
         GL::DispatchCompute(dispatchSize[0], dispatchSize[1], dispatchSize[2]);
 
         GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // TODO GL::MemoryBarrier - https://docs.gl/gl4/glMemoryBarrier
-        //  want to wait till compute shader is done with accessing images, so we can use them for drawing next
+        
         GL::MemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 #endif
@@ -167,11 +165,8 @@ namespace demos
 
     void D08ComputeShaders::updateDispatchSize()
     {
-        // TODO GL::GetProgramiv - https://docs.gl/gl4/glGetProgram
-        //  need to get the local workgroup size from the compute shader
-        GLint workgroup_size[3];
-        GL::GetProgramiv(computeShaders[selectedComputeShader].GetHandle(), GL_COMPUTE_WORK_GROUP_SIZE, workgroup_size);
-        localWorkgroupSize = { workgroup_size[0], workgroup_size[1], workgroup_size[2] };
+
+        GL::GetProgramiv(computeShaders[selectedComputeShader].GetHandle(), GL_COMPUTE_WORK_GROUP_SIZE, localWorkgroupSize.data());
 
         dispatchSize[0] = gsl::narrow<GLuint>(textureSize / localWorkgroupSize[0]);
         dispatchSize[1] = gsl::narrow<GLuint>(textureSize / localWorkgroupSize[1]);

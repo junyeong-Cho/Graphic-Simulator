@@ -1,21 +1,29 @@
-#version 430
+#version 430 core
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout (local_size_x = 32, local_size_y = 16) in;
 
-layout(binding = 0, rgba8) uniform image2D inputImage;
-layout(binding = 1, rgba8) uniform image2D outputImage;
+layout(binding = 1) uniform sampler2D uTex2d;  
 
-void main()
+layout(rgba8, binding = 0) uniform image2D imgOutput;  
+
+void main() 
 {
-    ivec2 texSize = imageSize(inputImage);
-    ivec2 id = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 coords = ivec2(gl_GlobalInvocationID.xy);  
+    ivec2 imageSize = imageSize(imgOutput);          
 
-    if (id.x >= texSize.x || id.y >= texSize.y)
-        return;
+    
+    vec2 normalizedCoords = coords / vec2(imageSize);
 
-    vec4 color = imageLoad(inputImage, id);
-    float luminance = sqrt(0.299 * color.r * color.r + 0.587 * color.g * color.g + 0.114 * color.b * color.b);
-    vec4 greyScaleColor = vec4(luminance, luminance, luminance, color.a);
 
-    imageStore(outputImage, id, greyScaleColor);
+    vec3 color = texture(uTex2d, normalizedCoords).rgb;
+    
+    float perceivedBrightness = sqrt(0.299 * color.r * color.r +
+                                     0.587 * color.g * color.g +
+                                     0.114 * color.b * color.b);
+
+    
+    vec4 grayScaleColor = vec4(perceivedBrightness, perceivedBrightness, perceivedBrightness, 1.0);
+
+   
+    imageStore(imgOutput, coords, grayScaleColor);
 }
