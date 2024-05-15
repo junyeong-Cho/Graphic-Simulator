@@ -1,8 +1,8 @@
 #version 330 core
 
 
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec2 aTexCoord;
+layout(location = 0) in vec3 aVertexPosition;
+layout(location = 2) in vec2 aVertexTextureCoordinates;
 
 
 uniform mat4 uProjection;
@@ -14,8 +14,8 @@ out vec2 vTexCoord;
 void main()
 {
 
-    gl_Position = uProjection * vec4(aPosition, 1.0);
+    gl_Position = uProjection * vec4(aVertexPosition, 1.0);
 
 
-    vTexCoord = aTexCoord * uTileScale;
+    vTexCoord = aVertexTextureCoordinates * uTileScale;
 }

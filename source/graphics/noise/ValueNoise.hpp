@@ -7,13 +7,13 @@
  */
 #pragma once
 
-#include <vector>
+#include <algorithm>
 #include <cmath>
 #include <numeric>
-#include <algorithm>
 #include <random>
+#include <vector>
+#include <util/Random.hpp>
 
-#define M_PI 3.14159265358979323846f
 
 namespace graphics::noise
 {
@@ -34,7 +34,6 @@ namespace graphics::noise
         _4096  = 1 << 12, // 2^12 = 4096
         _8192  = 1 << 13, // 2^13 = 8192
         _16384 = 1 << 14, // 2^14 = 16384
-
     };
 
     enum class SmoothMethod
@@ -45,111 +44,275 @@ namespace graphics::noise
         Quintic
     };
 
-    /* TODO - Implement ValueNoise Class*/
+    struct NoiseCoordinate
+    {
+        int   base        = 0;
+        int   next        = 0;
+        float interpolant = 0.0f;
+    };
+
+    constexpr NoiseCoordinate make_noise_coord(float input) noexcept
+    {
+        int   base        = static_cast<int>(input);
+        float interpolant = input - static_cast<float>(base);
+
+        if (input < 0.0f && interpolant != 0.0f)
+        {
+            --base;
+            interpolant = input - static_cast<float>(base);
+        }
+
+        int next = base + 1;
+
+        return NoiseCoordinate{ base, next, interpolant };
+    }
+
+    constexpr float apply_smoothing(float x, SmoothMethod smoothing) noexcept
+    {
+        constexpr float pi = 3.14159265358979323846f;
+        switch (smoothing)
+        {
+            case SmoothMethod::Linear: return x;
+            case SmoothMethod::Cosine: return 0.5f * (1.0f - cosf(x * pi));
+            case SmoothMethod::Smoothstep: return x * x * (3.0f - 2.0f * x);
+            case SmoothMethod::Quintic: return x * x * x * (x * (x * 6.0f - 15.0f) + 10.0f);
+            default: return x;
+        }
+    }
+
+    constexpr float fade(float x, SmoothMethod smoothing) noexcept
+    {
+        return apply_smoothing(x, smoothing);
+    }
+
+    template <typename T>
+    struct LinearValues
+    {
+        T Left{};
+        T Right{};
+    };
+
+    template <typename T, typename U>
+    constexpr auto linear_mix(const LinearValues<T>& values, U s) noexcept
+    {
+        return values.Left + s * (values.Right - values.Left);
+    }
+
+    template <typename T>
+    struct BiLinearValues
+    {
+        LinearValues<T> Bottom{};
+        LinearValues<T> Top{};
+    };
+
+    template <typename T, typename U>
+    constexpr auto bilinear_mix(const BiLinearValues<T>& values, U s, U t) noexcept
+    {
+        auto bottom = linear_mix(values.Bottom, s);
+        auto top    = linear_mix(values.Top, s);
+        return bottom + t * (top - bottom);
+    }
+
+    template <typename T>
+    struct TriLinearValues
+    {
+        BiLinearValues<T> Near{};
+        BiLinearValues<T> Far{};
+    };
+
+    template <typename T, typename U>
+    constexpr auto trilinear_mix(const TriLinearValues<T>& values, U s, U t, U p) noexcept
+    {
+        auto near = bilinear_mix(values.Near, s, t);
+        auto far  = bilinear_mix(values.Far, s, t);
+        return near + p * (far - near);
+    }
+
+    constexpr int period_dimension_mask(PeriodDimension period_dimension) noexcept
+    {
+        return static_cast<int>(period_dimension) - 1;
+    }
+
+    template <class RandomAccessIter>
+    void my_random_shuffle(RandomAccessIter first, RandomAccessIter last)
+    {
+        std::random_device rd;
+        std::mt19937       g(rd());
+        std::shuffle(first, last, g);
+    }
+
+    class PermutationHash
+    {
+    public:
+        PermutationHash() = default;
+
+        explicit PermutationHash(PeriodDimension table_size) : period_dimension_(table_size)
+        {
+            int size = static_cast<int>(table_size);
+            permutation_.resize(static_cast<std::vector<int>::size_type>(size * 2));
+
+            // Initialize the first half of the permutation vector with incrementing values
+            std::iota(permutation_.begin(), permutation_.begin() + size, 0);
+
+            // Shuffle the first half
+            my_random_shuffle(permutation_.begin(), permutation_.begin() + size);
+
+            // Copy the first half to the second half
+            std::copy(permutation_.begin(), permutation_.begin() + size, permutation_.begin() + size);
+        }
+
+        [[nodiscard]] int operator()(int x) const noexcept
+        {
+            int mask = period_dimension_mask(period_dimension_);
+            return permutation_[static_cast<std::vector<int>::size_type>(x & mask)];
+        }
+
+        [[nodiscard]] int operator()(int x, int y) const noexcept
+        {
+            int mask = period_dimension_mask(period_dimension_);
+            return permutation_[static_cast<std::vector<int>::size_type>((permutation_[static_cast<std::vector<int>::size_type>(x & mask)] + y) & mask)];
+        }
+
+        [[nodiscard]] int operator()(int x, int y, int z) const noexcept
+        {
+            int mask = period_dimension_mask(period_dimension_);
+            return permutation_[static_cast<std::vector<int>::size_type>(
+                (permutation_[static_cast<std::vector<int>::size_type>((permutation_[static_cast<std::vector<int>::size_type>(x & mask)] + y) & mask)] + z) & mask)];
+        }
+
+    private:
+        std::vector<int> permutation_;
+        PeriodDimension  period_dimension_;
+    };
+
     template <typename T>
     class [[nodiscard]] ValueNoise
     {
     public:
-        explicit ValueNoise(PeriodDimension period = PeriodDimension::_256, SmoothMethod smooth_method = SmoothMethod::Quintic) : period_(period), smooth_method_(smooth_method)
-        {
-            initialize();
-        }
+        explicit ValueNoise(PeriodDimension period = PeriodDimension::_256, SmoothMethod smooth_method = SmoothMethod::Quintic);
 
-        [[nodiscard]] T Evaluate(float x) const noexcept
-        {
-            auto coord = make_noise_coord(x);
-            return interpolate({ values_[coord.base % values_.size()], values_[coord.next % values_.size()] }, fade(coord.interpolant, smooth_method_));
-        }
+        [[nodiscard]] T Evaluate(float x) const noexcept;
+        [[nodiscard]] T Evaluate(float x, float y) const noexcept;
+        [[nodiscard]] T Evaluate(float x, float y, float z) const noexcept;
 
-        [[nodiscard]] T Evaluate(float x, float y) const noexcept
-        {
-            // Assuming T is a type that supports the operations below (like glm::vec4)
-            auto [s, t] = fade(x, y, smooth_method_);
-            auto values = bilinear_values(x, y);
-            return bilinear_mix(values, s, t);
-        }
+        [[nodiscard]] constexpr PeriodDimension GetPeriodDimension() const noexcept;
+        void                                    SetPeriod(PeriodDimension period);
 
-        [[nodiscard]] T Evaluate(float x, float y, float z) const noexcept
-        {
-            auto [s, t, p] = fade(x, y, z, smooth_method_);
-            auto values    = trilinear_values(x, y, z);
-            return trilinear_mix(values, s, t, p);
-        }
+        [[nodiscard]] constexpr SmoothMethod GetSmoothing() const noexcept;
+        constexpr void                       SetSmoothing(SmoothMethod smooth_method);
 
-        [[nodiscard]] constexpr PeriodDimension GetPeriodDimension() const noexcept
-        {
-            return period_;
-        }
-
-        void SetPeriod(PeriodDimension period)
-        {
-            period_ = period;
-            initialize(); // Reinitialize to accommodate new period size
-        }
-
-        [[nodiscard]] constexpr SmoothMethod GetSmoothing() const noexcept
-        {
-            return smooth_method_;
-        }
-
-        void SetSmoothing(SmoothMethod smooth_method)
-        {
-            smooth_method_ = smooth_method;
-        }
-
-        [[nodiscard]] constexpr const std::vector<T>& GetValues() const noexcept
-        {
-            return values_;
-        }
-
-        void SetValues(std::vector<T>&& new_values)
-        {
-            values_ = std::move(new_values);
-        }
+        [[nodiscard]] constexpr const std::vector<T>& GetValues() const noexcept;
+        constexpr void                                SetValues(std::vector<T>&& new_values);
 
     private:
-        PeriodDimension  period_;
-        SmoothMethod     smooth_method_;
-        std::vector<T>   values_;
-        std::vector<int> permutation_;
+        PeriodDimension period_;
+        SmoothMethod    smooth_method_;
+        std::vector<T>  values_;
+        PermutationHash permutation_;
 
-        void initialize()
-        {
-            int size = static_cast<int>(period_);
-            values_.resize(size);
-            permutation_.resize(size);
-
-            std::iota(permutation_.begin(), permutation_.end(), 0);
-            std::shuffle(permutation_.begin(), permutation_.end(), std::mt19937(std::random_device()()));
-
-            std::generate(values_.begin(), values_.end(), []() { return T(util::random()); });
-        }
-
-        constexpr NoiseCoordinate make_noise_coord(float input) const noexcept
-        {
-            int   base        = static_cast<int>(std::floor(input));
-            float interpolant = input - static_cast<float>(base);
-            if (input < 0.0f && interpolant != 0.0f)
-            {
-                --base;
-                interpolant = input - static_cast<float>(base);
-            }
-            int next = base + 1;
-            return { base, next, interpolant };
-        }
-
-        constexpr float fade(float interpolant, SmoothMethod method) const noexcept
-        {
-            switch (method)
-            {
-                case SmoothMethod::Linear: return interpolant;
-                case SmoothMethod::Cosine: return 0.5f * (1.0f - cosf(interpolant * M_PI));
-                case SmoothMethod::Smoothstep: return interpolant * interpolant * (3.0f - 2.0f * interpolant);
-                case SmoothMethod::Quintic: return interpolant * interpolant * interpolant * (interpolant * (interpolant * 6 - 15) + 10);
-                default: return interpolant;
-            }
-        }
+        void GenerateValues();
     };
 
+    template <typename T>
+    inline ValueNoise<T>::ValueNoise(PeriodDimension period, SmoothMethod smooth_method) : period_(period), smooth_method_(smooth_method), permutation_(period)
+    {
+        GenerateValues();
+    }
+
+    template <typename T>
+    inline T ValueNoise<T>::Evaluate(float x) const noexcept
+    {
+        auto  coord = make_noise_coord(x);
+        float s     = fade(coord.interpolant, smooth_method_);
+
+        LinearValues<T> lv{ values_[static_cast<std::vector<T>::size_type>(permutation_(coord.base))], values_[static_cast<std::vector<T>::size_type>(permutation_(coord.next))] };
+        return linear_mix(lv, s);
+    }
+
+    template <typename T>
+    inline T ValueNoise<T>::Evaluate(float x, float y) const noexcept
+    {
+        auto coord_x  = make_noise_coord(x);
+        auto coord_y  = make_noise_coord(y);
+        auto [sx, sy] = std::make_tuple(fade(coord_x.interpolant, smooth_method_), fade(coord_y.interpolant, smooth_method_));
+
+        BiLinearValues<T> blv{
+            {values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.base, coord_y.base))], values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.next, coord_y.base))]},
+            {values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.base, coord_y.next))], values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.next, coord_y.next))]}
+        };
+
+        return bilinear_mix(blv, sx, sy);
+    }
+
+    template <typename T>
+    inline T ValueNoise<T>::Evaluate(float x, float y, float z) const noexcept
+    {
+        auto coord_x      = make_noise_coord(x);
+        auto coord_y      = make_noise_coord(y);
+        auto coord_z      = make_noise_coord(z);
+        auto [sx, sy, sz] = std::make_tuple(fade(coord_x.interpolant, smooth_method_), fade(coord_y.interpolant, smooth_method_), fade(coord_z.interpolant, smooth_method_));
+
+        TriLinearValues<T> tlv{
+            {{ values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.base, coord_y.base, coord_z.base))],
+values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.next, coord_y.base, coord_z.base))] },
+             { values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.base, coord_y.next, coord_z.base))],
+             values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.next, coord_y.next, coord_z.base))] }},
+            {{ values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.base, coord_y.base, coord_z.next))],
+values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.next, coord_y.base, coord_z.next))] },
+             { values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.base, coord_y.next, coord_z.next))],
+             values_[static_cast<std::vector<T>::size_type>(permutation_(coord_x.next, coord_y.next, coord_z.next))] }}
+        };
+
+        return trilinear_mix(tlv, sx, sy, sz);
+    }
+
+    template <typename T>
+    inline constexpr PeriodDimension ValueNoise<T>::GetPeriodDimension() const noexcept
+    {
+        return period_;
+    }
+
+    template <typename T>
+    inline void ValueNoise<T>::SetPeriod(PeriodDimension period)
+    {
+        period_      = period;
+        permutation_ = PermutationHash(period);
+        GenerateValues();
+    }
+
+    template <typename T>
+    inline constexpr SmoothMethod ValueNoise<T>::GetSmoothing() const noexcept
+    {
+        return smooth_method_;
+    }
+
+    template <typename T>
+    inline constexpr void ValueNoise<T>::SetSmoothing(SmoothMethod smooth_method)
+    {
+        smooth_method_ = smooth_method;
+    }
+
+    template <typename T>
+    inline constexpr const std::vector<T>& ValueNoise<T>::GetValues() const noexcept
+    {
+        return values_;
+    }
+
+    template <typename T>
+    inline constexpr void ValueNoise<T>::SetValues(std::vector<T>&& new_values)
+    {
+        values_ = std::move(new_values);
+    }
+
+    template <typename T>
+    inline void ValueNoise<T>::GenerateValues()
+    {
+        int size = static_cast<int>(period_);
+        values_.resize(static_cast<typename std::vector<T>::size_type>(size));
+        for (int i = 0; i < size; ++i)
+        {
+            values_[static_cast<typename std::vector<T>::size_type>(i)] = static_cast<T>(util::random(0.0f, 1.0f)); // assuming T can be created from a float
+        }
+    }
 
 }
