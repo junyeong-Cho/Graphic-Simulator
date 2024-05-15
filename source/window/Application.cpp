@@ -532,6 +532,7 @@ namespace window
                 NameType{              "Fog",        Demos::Fog},
                 NameType{     "Toon Shading",        Demos::ToonShading},
                 NameType{   "Shadow Mapping",        Demos::ShadowMapping},
+                NameType{      "Value Noise",        Demos::ValueNoise}
             };
 
             if (!(environment::opengl::IsOpenGL_ES))

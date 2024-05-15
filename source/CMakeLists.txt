@@ -13,6 +13,7 @@ set(SOURCE_CODE
     demos/D06GeometryShaders.hpp demos/D06GeometryShaders.cpp
     demos/D07TessellationSHaders.hpp demos/D07TessellationShaders.cpp
     demos/D08ComputeShaders.hpp demos/D08ComputeShaders.cpp
+    demos/D09ValueNoise.hpp demos/D09ValueNoise.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
@@ -24,6 +25,7 @@ set(SOURCE_CODE
     graphics/Mesh.hpp graphics/Mesh.cpp
     graphics/MathHelper.hpp
     graphics/Camera.hpp
+    graphics/noise/ValueNoise.hpp
 
     opengl/GL.hpp opengl/GL.cpp
     opengl/GLHandle.hpp
@@ -38,6 +40,7 @@ set(SOURCE_CODE
     util/Timer.hpp
     util/WatchFiles.hpp util/WatchFiles.cpp
     util/Random.hpp util/Random.cpp
+    util/JobSystem.hpp util/JobSystem.cpp
 
     window/Application.hpp window/Application.cpp
     window/ImGuiHelper.hpp window/ImGuiHelper.cpp

@@ -19,4 +19,11 @@ namespace environment
     inline int                DisplayHeight      = 0;
     inline double             HorizontalDPIScale = 1.0;
     inline double             VerticalDPIScale   = 1.0;
+
+#if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
+#    define CAN_USE_THREADS
+    constexpr bool CanUseThreads = true;
+#else
+    constexpr bool CanUseThreads = false;
+#endif
 }

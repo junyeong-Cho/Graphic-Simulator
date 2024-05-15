@@ -7,9 +7,7 @@
  */
 #include "WatchFiles.hpp"
 
-#if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
-#    define CAN_USE_THREADS
-#endif
+#include "environment/Environment.hpp"
 
 #if defined(CAN_USE_THREADS)
 #    include <atomic>
@@ -223,8 +221,12 @@ namespace util
 #if defined(CAN_USE_THREADS)
         switch (should_thread)
         {
-            case BackgroundThread: impl = std::make_shared<WatchFilesThreaded>(the_delay); break;
-            case NoThread: impl = std::make_shared<WatchFilesNoThreads>(the_delay); break;
+            case BackgroundThread:
+                impl = std::make_shared<WatchFilesThreaded>(the_delay);
+                break;
+            case NoThread:
+                impl = std::make_shared<WatchFilesNoThreads>(the_delay);
+                break;
         }
 
 #else

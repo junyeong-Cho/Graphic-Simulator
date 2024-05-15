@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "GL/glew.h"
+#include "glm/glm.hpp"
 #include "GLHandle.hpp"
 
 #pragma once
@@ -45,6 +46,8 @@ public:
     [[nodiscard]] bool LoadFromMemory(int image_width, int image_height, const RGBA* colors) noexcept;
 
     void UseForSlot(unsigned int texture_unit) const noexcept;
+
+
 
     [[nodiscard]] GLHandle GetHandle() const noexcept
     {
