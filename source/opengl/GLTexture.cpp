@@ -159,6 +159,22 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
     return true;
 }
 
+void GLTexture::UploadAsRGBA(gsl::not_null<const RGBA*> colors) noexcept
+{
+    constexpr int base_mipmap_level = 0;
+    constexpr int xoffset = 0, yoffset = 0;
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::TextureSubImage2D(GetHandle(), base_mipmap_level, xoffset, yoffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+    }
+    else
+    {
+        GL::BindTexture(GL_TEXTURE_2D, GetHandle());
+        GL::TexSubImage2D(GL_TEXTURE_2D, base_mipmap_level, xoffset, yoffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, colors);
+        GL::BindTexture(GL_TEXTURE_2D, 0);
+    }
+}
+
 void GLTexture::UseForSlot(unsigned texture_unit) const noexcept
 {
     IF_CAN_DO_OPENGL(4, 5)

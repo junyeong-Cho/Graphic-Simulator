@@ -7,9 +7,9 @@
  */
 #include <array>
 #include <filesystem>
+#include <gsl/gsl>
 
 #include "GL/glew.h"
-#include "glm/glm.hpp"
 #include "GLHandle.hpp"
 
 #pragma once
@@ -40,12 +40,17 @@ public:
 
     [[nodiscard]] bool LoadFromFileImage(std::filesystem::path image_filepath, bool flip_vertical = true) noexcept;
 
+
+
     using RGBA = unsigned int;
     static_assert(sizeof(RGBA) == 4, "RGBA should be the same as 4 bytes, so we can easily treat it as an RGBA int.");
 
     [[nodiscard]] bool LoadFromMemory(int image_width, int image_height, const RGBA* colors) noexcept;
 
     void UseForSlot(unsigned int texture_unit) const noexcept;
+
+    void UploadAsRGBA(gsl::not_null<const RGBA*> colors) noexcept;
+
 
 
 
