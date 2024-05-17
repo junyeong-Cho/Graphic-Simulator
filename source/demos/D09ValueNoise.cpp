@@ -343,12 +343,14 @@ namespace demos
                 {
                     ++row;
                     column = 0;
-                    y      = xyInputValues[static_cast<size_t>(row)];
                     if (row >= height)
                     {
                         state = Generation::UploadNewTexture;
                         break;
                     }
+
+                    y = xyInputValues[static_cast<size_t>(row)];
+
                 }
             }
         }
