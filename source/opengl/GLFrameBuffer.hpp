@@ -41,10 +41,17 @@ public:
         return colorTexture;
     }
 
+    GLTexture& ColorTexture()
+    {
+        return colorTexture;
+    }
+
     enum ColorComponent
     {
         None,
-        RGBA8
+        RGBA8   = GLTexture::ColorFormat::RGBA8,
+        RGBA32F = GLTexture::ColorFormat::RGBA32F,
+        R32F    = GLTexture::ColorFormat::R32F,
     };
 
     struct Specification
@@ -55,7 +62,6 @@ public:
     };
 
     void LoadWithSpecification(Specification spec);
-
 
 private:
     void delete_resources() noexcept;

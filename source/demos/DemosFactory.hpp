@@ -26,6 +26,7 @@ namespace demos
         TessellationShaders,
         ComputeShaders,
         ValueNoise,
+        GradientNoise,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

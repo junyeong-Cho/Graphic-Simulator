@@ -40,7 +40,6 @@ bool GLTexture::LoadAsDepthTexture(int image_width, int image_height, DepthCompo
     width  = image_width;
     height = image_height;
 
-
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
@@ -159,6 +158,39 @@ bool GLTexture::LoadFromMemory(int image_width, int image_height, const RGBA* co
     return true;
 }
 
+bool GLTexture::LoadAsFormat(int image_width, int image_height, ColorFormat format) noexcept
+{
+    delete_texture();
+    width  = image_width;
+    height = image_height;
+
+    IF_CAN_DO_OPENGL(4, 5)
+    {
+        GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
+        GL::TextureStorage2D(texture_handle, 1, static_cast<GLenum>(format), width, height);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+    else
+    {
+        GL::GenTextures(1, &texture_handle);
+        GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+
+        GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLenum>(format), width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        GL::BindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    return true;
+}
+
 void GLTexture::UploadAsRGBA(gsl::not_null<const RGBA*> colors) noexcept
 {
     constexpr int base_mipmap_level = 0;
@@ -233,7 +265,6 @@ void GLTexture::SetWrapping(Wrapping how_to_wrap, Coordinate coord) noexcept
             num_coords       = 2;
             break;
     }
-
 
     GLenum gl_wrap_mode = (how_to_wrap == Wrapping::Repeat) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 

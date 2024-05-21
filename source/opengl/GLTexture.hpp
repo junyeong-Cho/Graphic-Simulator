@@ -34,13 +34,20 @@ public:
         DepthBits32F = GL_DEPTH_COMPONENT32F,
     };
 
+    enum ColorFormat : GLenum
+    {
+        RGBA8   = GL_RGBA8,
+        RGBA32F = GL_RGBA32F,
+        R32F    = GL_R32F,
+    };
+
     [[nodiscard]] bool LoadAsDepthTexture(int image_width, int image_height, DepthComponentSize bit_depth = DepthBits24) noexcept;
 
     [[nodiscard]] bool LoadAsRGBA(int image_width, int image_height) noexcept;
 
     [[nodiscard]] bool LoadFromFileImage(std::filesystem::path image_filepath, bool flip_vertical = true) noexcept;
 
-
+    [[nodiscard]] bool LoadAsFormat(int image_width, int image_height, ColorFormat format) noexcept;
 
     using RGBA = unsigned int;
     static_assert(sizeof(RGBA) == 4, "RGBA should be the same as 4 bytes, so we can easily treat it as an RGBA int.");
@@ -50,9 +57,6 @@ public:
     void UseForSlot(unsigned int texture_unit) const noexcept;
 
     void UploadAsRGBA(gsl::not_null<const RGBA*> colors) noexcept;
-
-
-
 
     [[nodiscard]] GLHandle GetHandle() const noexcept
     {

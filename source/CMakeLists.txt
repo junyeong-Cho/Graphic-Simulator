@@ -14,6 +14,7 @@ set(SOURCE_CODE
     demos/D07TessellationSHaders.hpp demos/D07TessellationShaders.cpp
     demos/D08ComputeShaders.hpp demos/D08ComputeShaders.cpp
     demos/D09ValueNoise.hpp demos/D09ValueNoise.cpp
+    demos/D10GradientNoise.hpp demos/D10GradientNoise.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 

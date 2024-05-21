@@ -32,7 +32,7 @@ GLFrameBuffer& GLFrameBuffer::operator=(GLFrameBuffer&& other) noexcept
 
 void GLFrameBuffer::Use(bool bind) const
 {
-    GL::BindFramebuffer(GL_FRAMEBUFFER, bind ? frameBufferHandle : 0);  
+    GL::BindFramebuffer(GL_FRAMEBUFFER, bind ? frameBufferHandle : 0);
 }
 
 void GLFrameBuffer::LoadWithSpecification(Specification spec)
@@ -59,7 +59,7 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
 
     if (spec.ColorFormat != ColorComponent::None)
     {
-        if (const auto loaded = colorTexture.LoadAsRGBA(width, height); !loaded)
+        if (const auto loaded = colorTexture.LoadAsFormat(width, height, static_cast<GLTexture::ColorFormat>(spec.ColorFormat)); !loaded)
         {
             std::cerr << "Failed to create color texture \n";
             return;
@@ -71,16 +71,15 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
         colorTexture = GLTexture();
     }
 
-
     GLenum status_result;
 
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::CreateFramebuffers(1, &frameBufferHandle);
         if (spec.DepthFormat != GLTexture::DepthComponentSize::None)
-		{
-			GL::NamedFramebufferTexture(frameBufferHandle, GL_DEPTH_ATTACHMENT, depthTexture.GetHandle(), 0);
-		}
+        {
+            GL::NamedFramebufferTexture(frameBufferHandle, GL_DEPTH_ATTACHMENT, depthTexture.GetHandle(), 0);
+        }
         if (spec.ColorFormat != ColorComponent::None)
         {
             GL::NamedFramebufferTexture(frameBufferHandle, GL_COLOR_ATTACHMENT0, colorTexture.GetHandle(), 0);
@@ -92,18 +91,18 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
     else
     {
         GL::GenFramebuffers(1, &frameBufferHandle);
-		GL::BindFramebuffer(GL_FRAMEBUFFER, frameBufferHandle);
-		if (spec.DepthFormat != GLTexture::DepthComponentSize::None)
-		{
-			GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture.GetHandle(), 0);
-		}
-		if (spec.ColorFormat != ColorComponent::None)
-		{
-			GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture.GetHandle(), 0);
-		}
-		GL::DrawBuffers(1, draw_buffers);
-		status_result = GL::CheckFramebufferStatus(GL_FRAMEBUFFER);
-		GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+        GL::BindFramebuffer(GL_FRAMEBUFFER, frameBufferHandle);
+        if (spec.DepthFormat != GLTexture::DepthComponentSize::None)
+        {
+            GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture.GetHandle(), 0);
+        }
+        if (spec.ColorFormat != ColorComponent::None)
+        {
+            GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture.GetHandle(), 0);
+        }
+        GL::DrawBuffers(1, draw_buffers);
+        status_result = GL::CheckFramebufferStatus(GL_FRAMEBUFFER);
+        GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     if (status_result != GL_FRAMEBUFFER_COMPLETE)
