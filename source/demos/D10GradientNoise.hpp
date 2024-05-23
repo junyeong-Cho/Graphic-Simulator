@@ -11,7 +11,6 @@
 #include "assets/Reloader.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/Mesh.hpp"
-#include "graphics/noise/PeriodDimension.hpp"
 #include "opengl/GLFrameBuffer.hpp"
 #include "opengl/GLShader.hpp"
 #include "opengl/GLTexture.hpp"
@@ -25,14 +24,11 @@ namespace demos
         D10GradientNoise();
 
         void Update() override;
-
         void Draw() const override;
         void ImGuiDraw() override;
-
         void SetDisplaySize(int width, int height) override;
 
     private:
-
         assets::Reloader  assetReloader;
         GLFrameBuffer     noiseFrameBuffer;
         GLShader          generateGradientNoiseShader;
@@ -98,5 +94,4 @@ namespace demos
         void buildSurfaceMesh();
         void updateSpectatorCamera();
     };
-
 }

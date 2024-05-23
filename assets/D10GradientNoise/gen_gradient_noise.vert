@@ -1,15 +1,12 @@
-#version 330 core
+#version 450
 
-layout(location = 0) in vec3 aPos;
+layout(location = 0) in vec3 aVertexPosition;
+layout(location = 2) in vec2 aVertexTextureCoordinates;
 
-uniform mat4 uProjection;
-uniform float uTileScale;
-uniform float uZ;
+out vec2 TexCoord;
 
-out vec3 vPos;
-
-void main() {
-    vPos = aPos * uTileScale;
-    vPos.z = uZ;
-    gl_Position = uProjection * vec4(aPos, 1.0);
+void main()
+{
+    TexCoord = aVertexTextureCoordinates;
+    gl_Position = vec4(aVertexPosition, 1.0);
 }

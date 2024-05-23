@@ -1,18 +1,25 @@
-#version 330 core
+#version 460
 
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec2 aTexCoord;
-
-uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjection;
-uniform float uTileScale;
-uniform sampler2D uNoiseTexture;
+layout(location = 0) in vec3 aVertexPosition;
+layout(location = 2) in vec2 aVertexTextureCoordinates;
 
 out vec2 TexCoord;
 
-void main() {
-    TexCoord = aTexCoord * uTileScale;
-    vec3 displacedPos = aPos + texture(uNoiseTexture, TexCoord).rgb;
-    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(displacedPos, 1.0);
+uniform sampler2D uTexture;
+uniform float uTileScale;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjection;
+
+void main()
+{
+    // Scale and interpolate texture coordinates
+    TexCoord = aVertexTextureCoordinates * uTileScale;
+
+    // Displace the vertex position based on the noise texture
+    vec3 displacedPosition = aVertexPosition;
+    displacedPosition.z += texture(uTexture, TexCoord).r;
+
+    // Convert the vertex position to clip space
+    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(displacedPosition, 1.0);
 }

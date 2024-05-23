@@ -27,7 +27,6 @@ set(SOURCE_CODE
     graphics/MathHelper.hpp
     graphics/Camera.hpp
     graphics/noise/ValueNoise.hpp
-    graphics/noise/GradientNoise.hpp
 
     opengl/GL.hpp opengl/GL.cpp
     opengl/GLHandle.hpp

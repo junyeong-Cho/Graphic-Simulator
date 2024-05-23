@@ -1,17 +1,17 @@
-#version 330 core
+#version 450
 
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec2 aTexCoord;
-
-uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjection;
-uniform float uTileScale;
+layout(location = 0) in vec3 aVertexPosition;
+layout(location = 2) in vec2 aVertexTextureCoordinates;
 
 out vec2 TexCoord;
 
-void main() 
+uniform mat4 uProjection;
+uniform float uTileScale;
+
+void main()
 {
-    TexCoord = aTexCoord * uTileScale;
-    gl_Position = uProjection * uViewMatrix * uModelMatrix * vec4(aPos, 1.0);
+    gl_Position = uProjection * vec4(aVertexPosition, 1.0);
+
+    TexCoord = aVertexTextureCoordinates * uTileScale;
+    
 }
