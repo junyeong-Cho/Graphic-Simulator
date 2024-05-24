@@ -69,19 +69,19 @@ float noise(vec3 p)
     int iy1 = (iy + 1) & 63;
     int iz1 = (iz + 1) & 63;
 
-    int ixy = permutations[(ix + permutations[iy]) & 127];
-    int ixy1 = permutations[(ix1 + permutations[iy]) & 127];
-    int ixy2 = permutations[(ix + permutations[iy1]) & 127];
-    int ixy3 = permutations[(ix1 + permutations[iy1]) & 127];
+    int ixy = permutations[(ix + permutations[iy]) ];
+    int ixy1 = permutations[(ix1 + permutations[iy])];
+    int ixy2 = permutations[(ix + permutations[iy1])];
+    int ixy3 = permutations[(ix1 + permutations[iy1])];
 
-    int g000 = permutations[(ixy + iz) & 127];
-    int g001 = permutations[(ixy + iz1) & 127];
-    int g010 = permutations[(ixy2 + iz) & 127];
-    int g011 = permutations[(ixy2 + iz1) & 127];
-    int g100 = permutations[(ixy1 + iz) & 127];
-    int g101 = permutations[(ixy1 + iz1) & 127];
-    int g110 = permutations[(ixy3 + iz) & 127];
-    int g111 = permutations[(ixy3 + iz1) & 127];
+    int g000 = permutations[(ixy + iz) ];
+    int g001 = permutations[(ixy + iz1)];
+    int g010 = permutations[(ixy2 + iz)];
+    int g011 = permutations[(ixy2 + iz1)];
+    int g100 = permutations[(ixy1 + iz) ];
+    int g101 = permutations[(ixy1 + iz1)];
+    int g110 = permutations[(ixy3 + iz) ];
+    int g111 = permutations[(ixy3 + iz1)];
 
 
     vec3 fadePf = vec3(quintic(Pf.x), quintic(Pf.y), quintic(Pf.z));
@@ -137,24 +137,31 @@ void main()
         case 2: // Turbulence
             for (int i = 0; i < numLayers; ++i)
             {
-                result += n * amplitude;
+                result += amplitude * abs(n);
                 p *= lacunarity;
                 n = noise(p);
                 amplitude *= gain;
             }
             break;
-       case 3: // Marble
-            float the_column = TexCoord.x * 64 / frequency;
-            for (int i = 0; i < numLayers; ++i)
+        case 3: // Marble
+            vec3 pos = vec3(TexCoord * 64.0, uZ);
+            result = 0.0f;
+            amplitude = 0.5f;
+
+            for (int i = 0; i < 3; ++i) 
             {
-                result += n * amplitude;
-                p *= lacunarity;
-                n = noise(p);
-                amplitude *= gain;
+                float n = amplitude * noise(pos);
+                result += n;
+                pos *= 2.0f;
+                amplitude *= 0.5f;
             }
+
             float MY_PI = 3.1415926535897932384626433832795028f;
-            result = (sin((the_column + result * 100.0) * 2.0 * MY_PI / 200.0) + 1.0) / 2.0;
+            float x_component = sin((pos.x + result * 10.0f) * 2.0f * MY_PI / 25.0f);
+
+            result = (x_component + 1.0f) / 2.0f;
             break;
+
         case 4: // Wood
             result = 10.0 * n;
             result = fract(result);

@@ -164,12 +164,14 @@ bool GLTexture::LoadAsFormat(int image_width, int image_height, ColorFormat form
     width  = image_width;
     height = image_height;
 
+    GLenum internal_format = static_cast<GLenum>(format);
+
     IF_CAN_DO_OPENGL(4, 5)
     {
         GL::CreateTextures(GL_TEXTURE_2D, 1, &texture_handle);
-        GL::TextureStorage2D(texture_handle, 1, static_cast<GLenum>(format), width, height);
-        GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TextureStorage2D(texture_handle, 1, internal_format, width, height);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GL::TextureParameteri(texture_handle, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TextureParameteri(texture_handle, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
@@ -177,14 +179,11 @@ bool GLTexture::LoadAsFormat(int image_width, int image_height, ColorFormat form
     {
         GL::GenTextures(1, &texture_handle);
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
-
-        GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLenum>(format), width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
-        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
+        GL::TexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         GL::BindTexture(GL_TEXTURE_2D, 0);
     }
 
