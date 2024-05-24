@@ -183,7 +183,7 @@ bool GLTexture::LoadAsFormat(int image_width, int image_height, ColorFormat form
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        GL::TexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internal_format), width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         GL::BindTexture(GL_TEXTURE_2D, 0);
     }
 

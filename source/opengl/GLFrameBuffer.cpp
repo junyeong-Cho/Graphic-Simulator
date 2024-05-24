@@ -55,7 +55,7 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
         depthTexture = GLTexture();
     }
 
-    GLenum draw_buffers[] = { GL_NONE };
+    std::vector<GLenum> draw_buffers;
 
     if (spec.ColorFormat != ColorComponent::None)
     {
@@ -64,7 +64,7 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
             std::cerr << "Failed to create color texture \n";
             return;
         }
-        draw_buffers[0] = GL_COLOR_ATTACHMENT0;
+        draw_buffers.push_back(GL_COLOR_ATTACHMENT0);
     }
     else
     {
@@ -85,7 +85,7 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
             GL::NamedFramebufferTexture(frameBufferHandle, GL_COLOR_ATTACHMENT0, colorTexture.GetHandle(), 0);
         }
 
-        GL::NamedFramebufferDrawBuffers(frameBufferHandle, 1, draw_buffers);
+        GL::NamedFramebufferDrawBuffers(frameBufferHandle, static_cast<GLsizei>(draw_buffers.size()), draw_buffers.data());
         status_result = GL::CheckNamedFramebufferStatus(frameBufferHandle, GL_FRAMEBUFFER);
     }
     else
@@ -100,7 +100,7 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
         {
             GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture.GetHandle(), 0);
         }
-        GL::DrawBuffers(1, draw_buffers);
+        GL::DrawBuffers(static_cast<GLsizei>(draw_buffers.size()), draw_buffers.data());
         status_result = GL::CheckFramebufferStatus(GL_FRAMEBUFFER);
         GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -123,6 +123,9 @@ void GLFrameBuffer::LoadWithSpecification(Specification spec)
 
 void GLFrameBuffer::delete_resources() noexcept
 {
-    GL::DeleteFramebuffers(1, &frameBufferHandle);
-    frameBufferHandle = 0;
+    if (frameBufferHandle != 0)
+    {
+        GL::DeleteFramebuffers(1, &frameBufferHandle);
+        frameBufferHandle = 0;
+    }
 }
