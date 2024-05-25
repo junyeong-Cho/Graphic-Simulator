@@ -165,6 +165,15 @@ bool GLTexture::LoadAsFormat(int image_width, int image_height, ColorFormat form
     height = image_height;
 
     GLenum internal_format = static_cast<GLenum>(format);
+    GLenum tex_format      = GL_RGBA;
+
+    switch (format)
+    {
+        case GL_R32F: tex_format = GL_RED; break;
+        case GL_RGBA8:
+        case GL_RGBA32F: tex_format = GL_RGBA; break;
+        default: break;
+    }
 
     IF_CAN_DO_OPENGL(4, 5)
     {
@@ -179,16 +188,33 @@ bool GLTexture::LoadAsFormat(int image_width, int image_height, ColorFormat form
     {
         GL::GenTextures(1, &texture_handle);
         GL::BindTexture(GL_TEXTURE_2D, texture_handle);
+
+        if (!environment::opengl::IsOpenGL_ES)
+        {
+            IF_CAN_DO_OPENGL(4, 2)
+            {
+                GL::TexStorage2D(GL_TEXTURE_2D, 1, internal_format, width, height);
+            }
+            else
+            {
+                GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internal_format), width, height, 0, tex_format, GL_UNSIGNED_BYTE, nullptr);
+            }
+        }
+        else
+        {
+            GL::TexStorage2D(GL_TEXTURE_2D, 1, internal_format, width, height);
+        }
+
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         GL::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        GL::TexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internal_format), width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         GL::BindTexture(GL_TEXTURE_2D, 0);
     }
 
     return true;
 }
+
 
 void GLTexture::UploadAsRGBA(gsl::not_null<const RGBA*> colors) noexcept
 {

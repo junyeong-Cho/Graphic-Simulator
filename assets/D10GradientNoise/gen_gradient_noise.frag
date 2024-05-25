@@ -1,4 +1,4 @@
-#version 460
+#version 300 es
 
 uniform float uZ;
 uniform int uPattern;
