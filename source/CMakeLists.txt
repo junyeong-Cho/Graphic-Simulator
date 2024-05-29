@@ -15,6 +15,7 @@ set(SOURCE_CODE
     demos/D08ComputeShaders.hpp demos/D08ComputeShaders.cpp
     demos/D09ValueNoise.hpp demos/D09ValueNoise.cpp
     demos/D10GradientNoise.hpp demos/D10GradientNoise.cpp
+    demos/D11CurvesNSplines.hpp demos/D11CurvesNSplines.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 
