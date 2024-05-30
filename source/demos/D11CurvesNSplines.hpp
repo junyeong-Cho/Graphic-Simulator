@@ -31,68 +31,73 @@ namespace demos
         void SetDisplaySize(int width, int height) override;
 
     private:
-        assets::Reloader  assetReloader;
-        GLFrameBuffer     noiseFrameBuffer;
-        GLShader          generateGradientNoiseShader;
-        GLShader          displayTextureShader;
-        GLShader          surfaceShader;
-        graphics::SubMesh quadMesh, surfaceMesh;
-        glm::mat4         projectionMatrix{ 1.0f };
-        graphics::Camera  camera;
-        glm::mat4         orthoProjectionMatrix;
-        int               textureSize = 1024;
-        float             tileScale{ 1.0f };
-        float             targetTileScale{ 0.25f };
-        float             targetZ = 0;
-        float             z       = 0.0f;
-
-        struct ViewNoise
+        struct ObjectModel
         {
             enum Type
             {
-                Texture,
-                Surface
+                Plane,
+                Cube,
+                Sphere,
+                Torus,
+                Cylinder,
+                Cone,
+                Line,
+                Count
+
             };
         };
 
-        ViewNoise::Type viewNoise = ViewNoise::Surface;
+        struct SceneObject
+        {
+            glm::vec3         Translation;
+            ObjectModel::Type Model = ObjectModel::Sphere;
+        };
 
-        struct Pattern
+        struct Materials
         {
             enum Type
             {
-                PlainGradient,
-                FractalSum,
-                Turbulence,
-                Marble,
-                Wood,
+                Textured,
+                TexturedPlane,
+                Wireframe,
+                Normals,
+                Count
             };
         };
 
-        Pattern::Type pattern = Pattern::PlainGradient;
+        GLShader                                         fillShader;
+        GLShader                                         texturedShader;
+        assets::Reloader                                 assetReloader;
+        GLTexture                                        uvTexture;
+        std::array<graphics::Mesh, ObjectModel::Count>   meshesTriangles;
+        std::array<graphics::Mesh, ObjectModel::Count>   meshesLines;
+        std::array<graphics::Mesh, ObjectModel::Count>   meshesNormals;
+        std::array<graphics::Material, Materials::Count> materials;
+        std::vector<SceneObject>                         sceneObjects;
+        glm::mat4                                        ProjectionMatrix;
+        glm::mat4                                        ViewMatrix;
+        glm::vec3                                        eyePosition{ 0.0f };
+        glm::vec3                                        targetEyePosition{ 0.0f };
+        constexpr static float                           ViewAllDistance    = 1.5f;
+        constexpr static float                           ViewOneDistance    = 0.6f;
+        float                                            viewDistance       = ViewOneDistance;
+        float                                            targetViewDistance = ViewAllDistance;
 
-        struct
-        {
-            int x = 0, y = 0, width = 0, height = 0;
-        } viewport;
-
-        struct
-        {
-            bool      IsLookingAround = false;
-            glm::vec3 MoveDirection{ 0.0f };
-            float     Yaw              = 0;
-            float     Pitch            = 0;
-            float     radiansPerSecond = 4.0f * 3.1415f;
-            float     unitsPerSecond   = 2.5f;
-        } spectatorCamera;
-
-        int   stacks       = 200;
-        int   slices       = 200;
-        float surfaceScale = 10.0f;
-        float heightScale  = 1.0f;
+        ObjectModel::Type selectedObjectModel = ObjectModel::Count;
+        bool              showWire            = false;
+        bool              showNormals         = false;
+        bool              showTextured        = true;
+        int               stacks              = 20;
+        int               slices              = 20;
+        bool              autoRotate          = true;
+        float             rotationAngle       = 0;
 
     private:
-
-
+        void setViewMatrix(glm::vec3 target_position, float distance = 1.5f);
+        void drawSceneObjects(const glm::mat4& r, const std::array<graphics::Mesh, ObjectModel::Count>& meshes) const;
+        void buildMeshes();
+        void buildTriangleMeshes(const std::array<const graphics::Geometry, ObjectModel::Count>& geometries);
+        void buildLineMeshes(const std::array<const graphics::Geometry, ObjectModel::Count>& geometries);
+        void buildNormalsMeshes(const std::array<const graphics::Geometry, ObjectModel::Count>& geometries);
     };
 }

@@ -372,7 +372,31 @@ namespace graphics
         return Geometry{ std::move(vertices), std::move(indices) };
     }
 
+    Geometry create_line(const std::vector<glm::vec3>& points)
+    {
+        std::vector<MeshVertex> vertices;
+        vertices.reserve(points.size());
 
+        for (const auto& point : points)
+        {
+            MeshVertex v;
+            v.position = point;
+            v.normal   = glm::vec3(0.0f, 0.0f, 1.0f); 
+            v.uv       = glm::vec2(0.0f, 0.0f);       
+            vertices.push_back(v);
+        }
+
+        std::vector<unsigned> indices;
+        indices.reserve((points.size() - 1) * 2);
+
+        for (unsigned i = 0; i < points.size() - 1; ++i)
+        {
+            indices.push_back(i);
+            indices.push_back(i + 1);
+        }
+
+        return Geometry{ std::move(vertices), std::move(indices) };
+    }
 
     void describe_meshvertex_layout(GLAttributeLayout& position, GLAttributeLayout& normal, GLAttributeLayout& uv)
     {
