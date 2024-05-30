@@ -149,7 +149,6 @@ namespace graphics
         return Geometry{ std::move(vertices), std::move(indices) };
     }
 
-
     void add_cap(std::vector<MeshVertex>& vertices, std::vector<unsigned>& indices, float center_y, int slices)
     {
         float      R           = 0.5f;
@@ -214,11 +213,10 @@ namespace graphics
             float row = static_cast<float>(stack) / static_cast<float>(stacks);
             for (int slice = 0; slice <= slices; ++slice)
             {
-                
                 float col      = static_cast<float>(slice) / static_cast<float>(slices);
-                float alpha     = col * PI * 2.0f; 
-                float sinAlpha = sinf(alpha);     
-                float cosAlpha = cosf(alpha);     
+                float alpha    = col * PI * 2.0f;
+                float sinAlpha = sinf(alpha);
+                float cosAlpha = cosf(alpha);
 
                 MeshVertex vertex;
                 vertex.position = glm::vec3(R * sinAlpha, row - 0.5f, R * cosAlpha);
@@ -235,57 +233,55 @@ namespace graphics
         return Geometry(vertices, indices);
     }
 
-
     Geometry create_cone(int stacks, int slices)
     {
         std::vector<MeshVertex> vertices;
         size_t                  numVertices = static_cast<size_t>((stacks + 1) * (slices + 1) + (slices + 1));
         vertices.reserve(numVertices);
-        float R = 0.5f;
-        float TopRadius = 0.0f;
+        float R            = 0.5f;
+        float TopRadius    = 0.0f;
         float BottomRadius = R;
-        float TopYValue = 0.5f;
+        float TopYValue    = 0.5f;
         float BottomYValue = -0.5f;
 
-        float Rise = TopYValue - BottomYValue;
-        float Run = TopRadius - BottomRadius;
-        float Slope = Rise / Run;
+        float Rise         = TopYValue - BottomYValue;
+        float Run          = TopRadius - BottomRadius;
+        float Slope        = Rise / Run;
         float TangentSlope = -1.0f / Slope;
 
         for (int stack = 0; stack < stacks + 1; stack++)
         {
-			float row = static_cast<float>(stack) / static_cast<float>(stacks);
-			float h = row - 0.5f;
+            float row = static_cast<float>(stack) / static_cast<float>(stacks);
+            float h   = row - 0.5f;
             for (int slice = 0; slice < slices + 1; slice++)
             {
-				float col = static_cast<float>(slice) / static_cast<float>(slices);
+                float col      = static_cast<float>(slice) / static_cast<float>(slices);
                 float alpha    = col * PI * 2.0f;
-				auto sinAlpha = sinf(alpha);
-				auto cosAlpha = cosf(alpha);
+                auto  sinAlpha = sinf(alpha);
+                auto  cosAlpha = cosf(alpha);
 
-				MeshVertex vertex;
-				vertex.position.x = R * (0.5f - h) * sinAlpha;
-				vertex.position.y = h;
-				vertex.position.z = R * (0.5f - h) * cosAlpha;
+                MeshVertex vertex;
+                vertex.position.x = R * (0.5f - h) * sinAlpha;
+                vertex.position.y = h;
+                vertex.position.z = R * (0.5f - h) * cosAlpha;
                 if (stack != stacks)
                 {
-					vertex.normal = glm::normalize(glm::vec3(sinAlpha, TangentSlope, cosAlpha));
-				}
+                    vertex.normal = glm::normalize(glm::vec3(sinAlpha, TangentSlope, cosAlpha));
+                }
                 else
                 {
-					vertex.normal = glm::vec3(0, 1, 0);
-				}
-				vertex.uv = glm::vec2(col, row);
-				vertices.push_back(vertex);
-			}
-		}
+                    vertex.normal = glm::vec3(0, 1, 0);
+                }
+                vertex.uv = glm::vec2(col, row);
+                vertices.push_back(vertex);
+            }
+        }
 
         std::vector<unsigned> indices = build_index_buffer(stacks, slices);
         add_cap(vertices, indices, -0.5f, slices);
 
         return Geometry{ std::move(vertices), std::move(indices) };
     }
-
 
     // https://prideout.net/blog/old/blog/index.html@p=22.html
     glm::vec3 evaluate_trefoil(float row, float col)
@@ -381,8 +377,8 @@ namespace graphics
         {
             MeshVertex v;
             v.position = point;
-            v.normal   = glm::vec3(0.0f, 0.0f, 1.0f); 
-            v.uv       = glm::vec2(0.0f, 0.0f);       
+            v.normal   = glm::vec3(0.0f, 0.0f, 1.0f);
+            v.uv       = glm::vec2(0.0f, 0.0f);
             vertices.push_back(v);
         }
 
@@ -400,8 +396,7 @@ namespace graphics
 
     Geometry create_line()
     {
-        std::vector<MeshVertex> vertices = 
-        {
+        std::vector<MeshVertex> vertices = {
             {glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
             { glm::vec3(0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
         };
@@ -414,7 +409,7 @@ namespace graphics
     Geometry create_circle(int segments)
     {
         std::vector<MeshVertex> vertices;
-        vertices.reserve(segments + 2);
+        vertices.reserve(static_cast<size_t>(segments) + 2);
 
         MeshVertex center_vertex;
         center_vertex.position = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -425,7 +420,7 @@ namespace graphics
         float angle_step = 2.0f * std::numbers::pi_v<float> / static_cast<float>(segments);
         for (int i = 0; i <= segments; ++i)
         {
-            float      angle = i * angle_step;
+            float      angle = static_cast<float>(i) * angle_step;
             MeshVertex vertex;
             vertex.position = glm::vec3(std::cos(angle) * 0.5f, std::sin(angle) * 0.5f, 0.0f);
             vertex.normal   = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -506,37 +501,32 @@ namespace
     std::vector<graphics::MeshVertex> create_plane_vertices(int stacks, int slices)
     {
         std::vector<graphics::MeshVertex> vertices;
-        auto numVertices = static_cast<std::vector<graphics::MeshVertex>::size_type>((stacks + 1) * (slices + 1));
+        auto                              numVertices = static_cast<std::vector<graphics::MeshVertex>::size_type>((stacks + 1) * (slices + 1));
         vertices.reserve(numVertices);
 
         for (int stack = 0; stack < stacks + 1; stack++)
         {
-			float row = static_cast<float>(stack) / static_cast<float>(stacks);
+            float row = static_cast<float>(stack) / static_cast<float>(stacks);
 
             for (int slice = 0; slice < slices + 1; slice++)
             {
-				float col = static_cast<float>(slice) / static_cast<float>(slices);
-				
+                float col = static_cast<float>(slice) / static_cast<float>(slices);
+
                 graphics::MeshVertex v;
-				v.position = glm::vec3(col - 0.5f, row - 0.5f, 0.0f);
-				v.normal   = glm::vec3(0.0f, 0.0f, 1.0f);
-				v.uv       = glm::vec2(col, row);
+                v.position = glm::vec3(col - 0.5f, row - 0.5f, 0.0f);
+                v.normal   = glm::vec3(0.0f, 0.0f, 1.0f);
+                v.uv       = glm::vec2(col, row);
 
-				vertices.push_back(v);
-			}
-		}
+                vertices.push_back(v);
+            }
+        }
 
-        return {vertices};
+        return { vertices };
     }
 
     std::vector<unsigned> build_index_buffer(int stacks, int slices)
     {
-        unsigned p0 = 0, 
-                 p1 = 0, 
-                 p2 = 0, 
-                 p3 = 0, 
-                 p4 = 0, 
-                 p5 = 0;
+        unsigned p0 = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0;
 
         std::vector<unsigned> indices;
         auto                  numTriangles = static_cast<std::vector<unsigned>::size_type>(stacks * slices) * 2;
@@ -550,7 +540,7 @@ namespace
 
             for (int j = 0; j < slices; j++)
             {
-                //Compute indices for the first triangle
+                // Compute indices for the first triangle
                 p0 = currRow + static_cast<unsigned int>(j);
                 p1 = p0 + 1;
                 p2 = p1 + stride;
@@ -560,7 +550,7 @@ namespace
                 indices.push_back(p2);
 
 
-                //Compute indices for the second triangle
+                // Compute indices for the second triangle
                 p3 = p2;
                 p4 = p3 - 1;
                 p5 = p0;
@@ -571,16 +561,16 @@ namespace
             }
         }
 
-       return {indices};
+        return { indices };
     }
 
     std::vector<unsigned> convert_to_lines_pattern(const std::vector<unsigned>& indices)
     {
-       std::vector<unsigned> linesIndices;
-       size_t                i = 0;
+        std::vector<unsigned> linesIndices;
+        size_t                i = 0;
 
-       if (indices.size() > 6)
-       {
+        if (indices.size() > 6)
+        {
             size_t limit = indices.size() % 6 == 0 ? indices.size() : indices.size() - 5;
 
             while (i < limit)
@@ -608,10 +598,10 @@ namespace
 
                 i += 6;
             }
-       }
+        }
 
-       if (i < indices.size() && indices.size() - i >= 3)
-       {
+        if (i < indices.size() && indices.size() - i >= 3)
+        {
             size_t limit = indices.size() % 3 == 0 ? indices.size() : indices.size() - 2;
 
             while (i < limit)
@@ -629,8 +619,8 @@ namespace
 
                 i += 3;
             }
-       }
+        }
 
-       return linesIndices;
+        return linesIndices;
     }
 }

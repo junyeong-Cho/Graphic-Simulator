@@ -89,21 +89,23 @@ namespace demos
 
         if (selectedPointIndex != -1)
         {
+            size_t index = static_cast<size_t>(selectedPointIndex);
+
             if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::W) != PressedKeyboardButtons.end())
             {
-                controlPoints[selectedPointIndex].y += moveSpeed;
+                controlPoints[index].y += moveSpeed;
             }
             if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::S) != PressedKeyboardButtons.end())
             {
-                controlPoints[selectedPointIndex].y -= moveSpeed;
+                controlPoints[index].y -= moveSpeed;
             }
             if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::A) != PressedKeyboardButtons.end())
             {
-                controlPoints[selectedPointIndex].x -= moveSpeed;
+                controlPoints[index].x -= moveSpeed;
             }
             if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::D) != PressedKeyboardButtons.end())
             {
-                controlPoints[selectedPointIndex].x += moveSpeed;
+                controlPoints[index].x += moveSpeed;
             }
         }
 

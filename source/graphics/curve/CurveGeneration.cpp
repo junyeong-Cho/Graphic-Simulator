@@ -18,7 +18,7 @@ namespace graphics
         {
             for (int j = 0; j <= segments; ++j)
             {
-                float t  = static_cast<float>(j) / segments;
+                float t  = static_cast<float>(j) / static_cast<float>(segments);
                 float t2 = t * t;
                 float t3 = t2 * t;
 
@@ -53,7 +53,7 @@ namespace graphics
 
             for (int j = 0; j <= segments; ++j)
             {
-                float t  = static_cast<float>(j) / segments;
+                float t  = static_cast<float>(j) / static_cast<float>(segments);
                 float t2 = t * t;
                 float t3 = t2 * t;
 
