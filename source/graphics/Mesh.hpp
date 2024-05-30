@@ -52,12 +52,19 @@ namespace graphics
 
     Geometry create_plane(int stacks, int slices);
     Geometry create_cube(int stacks, int slices);
+    
     Geometry create_line(const std::vector<glm::vec3>& points);
+    Geometry create_line();
+
+    Geometry create_circle(int segments);
+
     Geometry create_sphere(int stacks, int slices);
     Geometry create_torus(int stacks, int slices, float start_angle = 0, float end_angle = 2.0f * PI);
     Geometry create_cylinder(int stacks, int slices);
     Geometry create_cone(int stacks, int slices);
     Geometry create_trefoil(int stacks, int slices);
+
+
     SubMesh  to_submesh_as_triangles(const Geometry& geometry, Material* material = nullptr);
     SubMesh  to_submesh_as_lines(const Geometry& geometry, Material* material = nullptr);
 }

@@ -398,6 +398,52 @@ namespace graphics
         return Geometry{ std::move(vertices), std::move(indices) };
     }
 
+    Geometry create_line()
+    {
+        std::vector<MeshVertex> vertices = 
+        {
+            {glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+            { glm::vec3(0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)}
+        };
+
+        std::vector<unsigned> indices = { 0, 1 };
+
+        return Geometry{ std::move(vertices), std::move(indices) };
+    }
+
+    Geometry create_circle(int segments)
+    {
+        std::vector<MeshVertex> vertices;
+        vertices.reserve(segments + 2);
+
+        MeshVertex center_vertex;
+        center_vertex.position = glm::vec3(0.0f, 0.0f, 0.0f);
+        center_vertex.normal   = glm::vec3(0.0f, 0.0f, 1.0f);
+        center_vertex.uv       = glm::vec2(0.5f, 0.5f);
+        vertices.push_back(center_vertex);
+
+        float angle_step = 2.0f * std::numbers::pi_v<float> / static_cast<float>(segments);
+        for (int i = 0; i <= segments; ++i)
+        {
+            float      angle = i * angle_step;
+            MeshVertex vertex;
+            vertex.position = glm::vec3(std::cos(angle) * 0.5f, std::sin(angle) * 0.5f, 0.0f);
+            vertex.normal   = glm::vec3(0.0f, 0.0f, 1.0f);
+            vertex.uv       = glm::vec2((std::cos(angle) + 1.0f) * 0.5f, (std::sin(angle) + 1.0f) * 0.5f);
+            vertices.push_back(vertex);
+        }
+
+        std::vector<unsigned> indices;
+        for (unsigned i = 1; i <= static_cast<unsigned>(segments); ++i)
+        {
+            indices.push_back(0);
+            indices.push_back(i);
+            indices.push_back(i + 1);
+        }
+
+        return Geometry{ std::move(vertices), std::move(indices) };
+    }
+
     void describe_meshvertex_layout(GLAttributeLayout& position, GLAttributeLayout& normal, GLAttributeLayout& uv)
     {
         position.component_type         = GLAttributeLayout::Float;

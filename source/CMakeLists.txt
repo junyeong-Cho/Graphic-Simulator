@@ -28,6 +28,7 @@ set(SOURCE_CODE
     graphics/MathHelper.hpp
     graphics/Camera.hpp
     graphics/noise/ValueNoise.hpp
+    graphics/curve/CurveGeneration.hpp graphics/curve/CurveGeneration.cpp
 
     opengl/GL.hpp opengl/GL.cpp
     opengl/GLHandle.hpp
