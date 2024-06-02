@@ -16,6 +16,7 @@ set(SOURCE_CODE
     demos/D09ValueNoise.hpp demos/D09ValueNoise.cpp
     demos/D10GradientNoise.hpp demos/D10GradientNoise.cpp
     demos/D11CurvesNSplines.hpp demos/D11CurvesNSplines.cpp
+    demos/D12IntegratedDemo.hpp demos/D12IntegratedDemo.cpp
     demos/DemosFactory.hpp demos/DemosFactory.cpp
     demos/IDemo.hpp
 

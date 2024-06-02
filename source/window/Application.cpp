@@ -534,7 +534,8 @@ namespace window
                 NameType{   "Shadow Mapping",        Demos::ShadowMapping},
                 NameType{      "Value Noise",        Demos::ValueNoise},
                 NameType{   "Gradient Noise",        Demos::GradientNoise},
-                NameType{  "Curves N Splines",       Demos::CurvesNSplines}
+                NameType{  "Curves N Splines",       Demos::CurvesNSplines},
+                NameType{   "Integrated Demo",       Demos::IntegratedDemo },
             };
 
             if (!(environment::opengl::IsOpenGL_ES))

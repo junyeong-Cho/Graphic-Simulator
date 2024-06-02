@@ -19,7 +19,7 @@
 #include "D09ValueNoise.hpp"
 #include "D10GradientNoise.hpp"
 #include "D11CurvesNSplines.hpp"
-
+#include "D12IntegratedDemo.hpp"
 
 #include <algorithm>
 #include <stdexcept>
@@ -45,6 +45,7 @@ namespace demos
             case Demos::ValueNoise:          return new D09ValueNoise();
             case Demos::GradientNoise:       return new D10GradientNoise();
             case Demos::CurvesNSplines:      return new D11CurvesNSplines();
+            case Demos::IntegratedDemo:      return new D12IntegratedDemo();
             default: throw std::runtime_error{ "Tried to create a demo we don't have yet...\n" }; break;
         }
     }
