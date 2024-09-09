@@ -1,14 +1,10 @@
-# CS250 Assignments
+# Graphic Simulator
 
-For the class assignments you will make a series of graphics demo programs that showcases all the topics discussed in the course.
+Hello! This is a graphics simulator developed using C++ and OpenGL.
 
-Each topic will have applicable sliders and/or modifiers to play around with the parameters which affect the topic.
+And this is a cross platform targeting Windows & Web platforms as a minimum and possibly the Ubuntu & Mac platforms.
 
-The topics will be presented and implemented with OpenGL.
-
-This will be a cross platform targeting Windows & Web platforms as a minimum and possibly the Ubuntu & Mac platforms.
-
-Your topics include but are not limited to:
+This program topics include but are not limited to:
 
 1. Procedural Geometric Modeling
 	- Plane, Cube, Sphere, Torus, Cylinder, and Cone
