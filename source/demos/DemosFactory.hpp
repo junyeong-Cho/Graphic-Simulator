@@ -28,6 +28,7 @@ namespace demos
         ValueNoise,
         GradientNoise,
         CurvesNSplines,
+        GraphGenerator,
     };
 
     gsl::owner<IDemo*> create_demo(Demos the_demo);

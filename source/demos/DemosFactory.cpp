@@ -19,6 +19,7 @@
 #include "D09ValueNoise.hpp"
 #include "D10GradientNoise.hpp"
 #include "D11CurvesNSplines.hpp"
+#include "D12GraphGenerator.hpp"
 
 
 #include <algorithm>
@@ -45,6 +46,9 @@ namespace demos
             case Demos::ValueNoise:          return new D09ValueNoise();
             case Demos::GradientNoise:       return new D10GradientNoise();
             case Demos::CurvesNSplines:      return new D11CurvesNSplines();
+            case Demos::GraphGenerator:      return new D12GraphGenerator();
+
+           
             default: throw std::runtime_error{ "Tried to create a demo we don't have yet...\n" }; break;
         }
     }
@@ -62,7 +66,8 @@ namespace demos
             { "comp",         Demos::ComputeShaders },
             { "value",        Demos::ValueNoise },
             { "gradient",     Demos::GradientNoise },
-			{ "curves",       Demos::CurvesNSplines }
+			{ "curves",       Demos::CurvesNSplines },
+            { "Generator",    Demos::GraphGenerator },
         };
         const auto to_lower = [](std::string_view s)
         {

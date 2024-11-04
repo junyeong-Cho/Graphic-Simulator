@@ -331,7 +331,7 @@ namespace demos
                 }
                 ImGui::SameLine();
                 const auto&       texture        = gradientTextures[i];
-                const ImTextureID handle         = reinterpret_cast<void*>(static_cast<intptr_t>(texture.GetHandle()));
+                const ImTextureID handle         = static_cast<ImTextureID>(static_cast<intptr_t>(texture.GetHandle()));
                 const float       aspect         = static_cast<float>(texture.GetWidth()) / static_cast<float>(texture.GetHeight());
                 constexpr float   display_height = 10.0f;
                 const float       display_width  = display_height * aspect;
