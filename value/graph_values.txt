@@ -1,0 +1,8 @@
+Sine Graph Values:
+Min Value: -1
+Max Value: 1
+Slope: 1
+X Start: 0
+X End: 10
+Samples: 100
+Current Red Circle Position: (6.834, 0.523385)

@@ -13,6 +13,9 @@
 #include <imgui.h>
 #include <span>
 
+#include <filesystem>
+#include <fstream>
+
 namespace asset_paths
 {
     constexpr auto CurveVertexPath   = "D12GraphGenerator/curve.vert";
@@ -188,6 +191,37 @@ namespace demos
         }
     }
 
+    void D12GraphGenerator::SaveGraphValuesToFile()
+    {
+        // Define the relative path to the "value" folder
+        std::filesystem::path savePath = "C:/Users/savio/source/repos/junyeong-Cho/Graphic-Simulator";
+        std::filesystem::create_directories(savePath); // Ensure the directory exists
+
+        // Define the file path
+        savePath /= "graph_values.txt";
+
+        // Open the file and write the graph data
+        std::ofstream file(savePath);
+        if (file.is_open())
+        {
+            file << "Sine Graph Values:\n";
+            file << "Slope: " << slope << "\n";
+            file << "Equation: y = " << slope << " * sin(x)\n";
+            file << "Values:\n";
+
+            // Step through x values from xStart to xEnd to calculate y values
+            float x = xStart;
+            while (x <= xEnd)
+            {
+                float y = slope * sinf(x);
+                file << "(" << x << ", " << y << ")\n";
+                x += viewValueSpeed; // Increment x by the movement speed for each step
+            }
+
+            file.close();
+        }
+    }
+
     void D12GraphGenerator::ImGuiDraw()
     {
         ImGui::Text("Sine Graph Generator");
@@ -201,28 +235,24 @@ namespace demos
         if (ImGui::SliderFloat("Slope", &slope, 0.1f, 10.0f))
             needUpdate = true;
 
-        // Display xStart as read-only
         ImGui::Text("X Start: 0.0");
-        xStart = 0.0f; // Ensure xStart is fixed to 0
+        xStart = 0.0f;
 
         if (ImGui::SliderFloat("X End", &xEnd, 0.1f, 100.0f))
             needUpdate = true;
         if (ImGui::SliderInt("Samples", &samples, 10, 1000))
             needUpdate = true;
 
-        // Toggle automated movement of the red circle
         if (ImGui::Button(viewValueActive ? "Stop" : "View Value"))
         {
             viewValueActive = !viewValueActive;
-            viewValuePaused = false; // Reset pause state
+            viewValuePaused = false;
             if (viewValueActive)
-                viewValueX = xStart; // Reset position when starting
+                viewValueX = xStart;
         }
 
-        // Manual control slider for red circle
         ImGui::SliderFloat("Manual Value Position", &viewValueX, xStart, xEnd);
 
-        // Start/stop and control the speed of the red circle
         if (viewValueActive)
         {
             if (ImGui::Button(viewValuePaused ? "Resume" : "Pause"))
@@ -239,5 +269,12 @@ namespace demos
 
         if (needUpdate)
             UpdateGraph();
+
+        // "Get Value" button to save values to file
+        if (ImGui::Button("Get Value File"))
+        {
+            SaveGraphValuesToFile();
+        }
     }
+
 }

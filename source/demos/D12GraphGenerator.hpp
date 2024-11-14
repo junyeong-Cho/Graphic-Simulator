@@ -30,6 +30,8 @@ namespace demos
         void UpdateGraph();
         void HandleInput();
         void InitializeCircleMesh();
+        void SaveGraphValuesToFile();
+
 
         GLShader      shader;
         GLVertexArray graphMesh;
