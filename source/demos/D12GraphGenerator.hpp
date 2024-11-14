@@ -1,11 +1,3 @@
-/**
- * \file
- * \author Junyeong Cho
- * \date 2024 Spring
- * \par CS250 Computer Graphics II
- * \copyright DigiPen Institute of Technology
- */
-
 #pragma once
 
 #include "IDemo.hpp"
@@ -37,18 +29,24 @@ namespace demos
     private:
         void UpdateGraph();
         void HandleInput();
+        void InitializeCircleMesh();
 
         GLShader      shader;
         GLVertexArray graphMesh;
+        GLVertexArray circleMesh;
 
         assets::Reloader assetReloader;
 
         std::vector<graphics::MeshVertex> graphVertices;
         std::vector<unsigned>             graphIndices;
+        std::vector<glm::vec3>            peakPoints;
 
         GLAttributeLayout position;
         GLAttributeLayout color;
         GLAttributeLayout uv;
+
+        graphics::Camera camera;
+        glm::mat4        projectionMatrix{ 1.0f };
 
         int   samples;
         float minValue;
@@ -57,5 +55,11 @@ namespace demos
         float xStart;
         float xEnd;
         float zoomLevel;
+
+        // New members for the moving red circle
+        bool  viewValueActive = false;
+        bool  viewValuePaused = false;
+        float viewValueX      = 0.0f;  // Current x-position of the red circle
+        float viewValueSpeed  = 0.05f; // Speed of the red circle movement
     };
 }

@@ -1,20 +1,10 @@
-﻿/**
- * \file
- * \author Junyeong Cho
- * \date 2024 Spring
- * \par CS250 Computer Graphics II
- * \copyright DigiPen Institute of Technology
- */
-
-#include "D12GraphGenerator.hpp"
+﻿#include "D12GraphGenerator.hpp"
 
 #include "environment/Environment.hpp"
 #include "environment/Input.hpp"
 #include "environment/OpenGL.hpp"
-
 #include "graphics/MathHelper.hpp"
 #include "graphics/Mesh.hpp"
-
 #include "opengl/GL.hpp"
 
 #include <SDL.h>
@@ -32,12 +22,17 @@ namespace asset_paths
 
 namespace demos
 {
-    D12GraphGenerator::D12GraphGenerator() : samples(100), minValue(-1.0f), maxValue(1.0f), slope(1.0f), xStart(-10.0f), xEnd(10.0f), zoomLevel(1.0f)
+    D12GraphGenerator::D12GraphGenerator() : samples(100), minValue(-1.0f), maxValue(1.0f), slope(1.0f), xStart(0.0f), xEnd(10.0f), zoomLevel(1.0f), viewValueSpeed(0.01f), viewValuePaused(true)
     {
         GL::ClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 
         assetReloader.SetAndAutoReloadShader(shader, asset_paths::ShaderName, { asset_paths::CurveVertexPath, asset_paths::CurveFragmentPath });
 
+        glm::vec3 eye_position{ 0, 0, 10 };
+        glm::vec3 target_position{ 0, 0, 0 };
+        camera = graphics::Camera(eye_position, target_position - eye_position, graphics::Camera::WORLD_UP);
+
+        InitializeCircleMesh();
         UpdateGraph();
 
         GLAttributeLayout posAttr;
@@ -52,86 +47,66 @@ namespace demos
         assert(shader.IsValidWithVertexArrayObject(graphMesh.GetHandle()));
     }
 
+    void D12GraphGenerator::InitializeCircleMesh()
+    {
+        GLAttributeLayout posAttr;
+        GLAttributeLayout colAttr;
+        GLAttributeLayout uvAttr;
+        graphics::describe_meshvertex_layout(posAttr, colAttr, uvAttr);
+
+        auto circleGeometry = graphics::create_circle(32);
+        circleMesh.SetPrimitivePattern(GLPrimitive::Triangles);
+        circleMesh.AddVertexBuffer(GLVertexBuffer(std::span{ circleGeometry.Vertices }), { posAttr, colAttr, uvAttr });
+        circleMesh.SetIndexBuffer(GLIndexBuffer(std::span{ circleGeometry.Indicies }));
+    }
+
     void D12GraphGenerator::Update()
     {
         assetReloader.Update();
         HandleInput();
+
+        // Move red circle only if viewValueActive and not paused
+        if (viewValueActive && !viewValuePaused)
+        {
+            viewValueX += viewValueSpeed;
+            if (viewValueX > xEnd)
+            {
+                viewValueX = xStart; // Loop back to start if exceeding graph range
+            }
+        }
     }
 
     void D12GraphGenerator::HandleInput()
     {
-        // Handle any necessary inputs
-    }
+        using namespace environment::input;
 
-    void D12GraphGenerator::Draw() const
-    {
-        GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        shader.Use();
+        float moveSpeed = 0.05f;
+        float zoomSpeed = 0.1f;
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view  = glm::mat4(1.0f);
-
-        float zoomFactor = 1.0f / zoomLevel;
-
-        // Calculate centers and ranges
-        float xCenter = (xStart + xEnd) / 2.0f;
-        float yCenter = (minValue + maxValue) / 2.0f;
-
-        float xRange = (xEnd - xStart) * zoomFactor;
-        float yRange = (maxValue - minValue) * zoomFactor;
-
-        float left   = xCenter - xRange / 2.0f;
-        float right  = xCenter + xRange / 2.0f;
-        float bottom = yCenter - yRange / 2.0f;
-        float top    = yCenter + yRange / 2.0f;
-
-        glm::mat4 projection = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
-        glm::mat4 clip       = projection * view * model;
-
-        shader.SendUniform("uClipcoords", clip);
-
-        graphMesh.Use();
-        GLDrawIndexed(graphMesh);
-    }
-
-    void D12GraphGenerator::ImGuiDraw()
-    {
-        ImGui::Text("%s\n\n", "Sine Graph Generator");
-
-        bool needUpdate = false;
-
-        if (ImGui::SliderFloat("Min Value", &minValue, -10.0f, maxValue - 0.1f))
+        // Camera movement and zoom
+        if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::W) != PressedKeyboardButtons.end())
         {
-            needUpdate = true;
+            camera.Move(glm::vec3(0, moveSpeed, 0));
         }
-        if (ImGui::SliderFloat("Max Value", &maxValue, minValue + 0.1f, 10.0f))
+        if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::S) != PressedKeyboardButtons.end())
         {
-            needUpdate = true;
+            camera.Move(glm::vec3(0, -moveSpeed, 0));
         }
-        if (ImGui::SliderFloat("Slope", &slope, 0.1f, 10.0f))
+        if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::A) != PressedKeyboardButtons.end())
         {
-            needUpdate = true;
+            camera.Move(glm::vec3(-moveSpeed, 0, 0));
         }
-        if (ImGui::SliderFloat("X Start", &xStart, -100.0f, xEnd - 0.1f))
+        if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::D) != PressedKeyboardButtons.end())
         {
-            needUpdate = true;
+            camera.Move(glm::vec3(moveSpeed, 0, 0));
         }
-        if (ImGui::SliderFloat("X End", &xEnd, xStart + 0.1f, 100.0f))
+        if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::Q) != PressedKeyboardButtons.end())
         {
-            needUpdate = true;
+            camera.Move(glm::vec3(0, 0, -zoomSpeed));
         }
-        if (ImGui::SliderInt("Samples", &samples, 10, 1000))
+        if (std::find(PressedKeyboardButtons.begin(), PressedKeyboardButtons.end(), KeyboardButtons::E) != PressedKeyboardButtons.end())
         {
-            needUpdate = true;
-        }
-        if (ImGui::SliderFloat("Zoom", &zoomLevel, 0.1f, 10.0f, "%.1f"))
-        {
-            // Zoom level affects the projection, so no need to update the graph data
-        }
-
-        if (needUpdate)
-        {
-            UpdateGraph();
+            camera.Move(glm::vec3(0, 0, zoomSpeed));
         }
     }
 
@@ -139,6 +114,7 @@ namespace demos
     {
         graphVertices.clear();
         graphIndices.clear();
+        peakPoints.clear();
 
         float xRange = xEnd - xStart;
         float xStep  = xRange / samples;
@@ -146,26 +122,122 @@ namespace demos
         for (int i = 0; i <= samples; ++i)
         {
             float x = xStart + i * xStep;
-            float y = slope * sinf(x);
-
-            // Clamp y to minValue and maxValue
-            y = glm::clamp(y, minValue, maxValue);
+            float y = slope * sinf(x); // Do not clamp here
 
             graphVertices.push_back({ glm::vec3(x, y, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f) });
             graphIndices.push_back(i);
+
+            // Detect peak points for display purposes if needed
+            if (i > 0 && i < samples)
+            {
+                float prevY = slope * sinf(x - xStep);
+                float nextY = slope * sinf(x + xStep);
+                if ((y > prevY && y > nextY) || (y < prevY && y < nextY))
+                {
+                    peakPoints.push_back(glm::vec3(x, y, 0.0f));
+                }
+            }
         }
 
-        // Re-initialize the vertex array object instead of clearing it
+        // Set up the graph mesh with updated vertices
         graphMesh = GLVertexArray(GLPrimitive::LineStrip);
-
         GLAttributeLayout posAttr;
         GLAttributeLayout colAttr;
         GLAttributeLayout uvAttr;
         graphics::describe_meshvertex_layout(posAttr, colAttr, uvAttr);
-
         graphMesh.AddVertexBuffer(GLVertexBuffer(std::span{ graphVertices }), { posAttr, colAttr, uvAttr });
         graphMesh.SetIndexBuffer(GLIndexBuffer(std::span{ graphIndices }));
+    }
 
-        assert(shader.IsValidWithVertexArrayObject(graphMesh.GetHandle()));
+    void D12GraphGenerator::Draw() const
+    {
+        GL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        shader.Use();
+
+        glm::mat4 model      = glm::mat4(1.0f);
+        glm::mat4 view       = camera.ViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+
+        glm::mat4 clip = projection * view * model;
+        shader.SendUniform("uClipcoords", clip);
+
+        // Draw graph
+        graphMesh.Use();
+        GLDrawIndexed(graphMesh);
+
+        // Draw circles at peaks
+        for (const auto& peak : peakPoints)
+        {
+            glm::mat4 circleModel = glm::translate(glm::mat4(1.0f), peak) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+            glm::mat4 circleClip  = projection * view * circleModel;
+            shader.SendUniform("uClipcoords", circleClip);
+            circleMesh.Use();
+            GLDrawIndexed(circleMesh);
+        }
+
+        // Draw moving red circle if active
+        if (viewValueActive)
+        {
+            float     y = slope * sinf(viewValueX);
+            glm::vec3 redCirclePos(viewValueX, y, 0.0f);
+            glm::mat4 redCircleModel = glm::translate(glm::mat4(1.0f), redCirclePos) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+            glm::mat4 redCircleClip  = projection * view * redCircleModel;
+            shader.SendUniform("uClipcoords", redCircleClip);
+            circleMesh.Use();
+            GLDrawIndexed(circleMesh);
+        }
+    }
+
+    void D12GraphGenerator::ImGuiDraw()
+    {
+        ImGui::Text("Sine Graph Generator");
+
+        bool needUpdate = false;
+
+        if (ImGui::SliderFloat("Min Value", &minValue, -10.0f, maxValue - 0.1f))
+            needUpdate = true;
+        if (ImGui::SliderFloat("Max Value", &maxValue, minValue + 0.1f, 10.0f))
+            needUpdate = true;
+        if (ImGui::SliderFloat("Slope", &slope, 0.1f, 10.0f))
+            needUpdate = true;
+
+        // Display xStart as read-only
+        ImGui::Text("X Start: 0.0");
+        xStart = 0.0f; // Ensure xStart is fixed to 0
+
+        if (ImGui::SliderFloat("X End", &xEnd, 0.1f, 100.0f))
+            needUpdate = true;
+        if (ImGui::SliderInt("Samples", &samples, 10, 1000))
+            needUpdate = true;
+
+        // Toggle automated movement of the red circle
+        if (ImGui::Button(viewValueActive ? "Stop" : "View Value"))
+        {
+            viewValueActive = !viewValueActive;
+            viewValuePaused = false; // Reset pause state
+            if (viewValueActive)
+                viewValueX = xStart; // Reset position when starting
+        }
+
+        // Manual control slider for red circle
+        ImGui::SliderFloat("Manual Value Position", &viewValueX, xStart, xEnd);
+
+        // Start/stop and control the speed of the red circle
+        if (viewValueActive)
+        {
+            if (ImGui::Button(viewValuePaused ? "Resume" : "Pause"))
+            {
+                viewValuePaused = !viewValuePaused;
+            }
+            ImGui::SliderFloat("Movement Speed", &viewValueSpeed, 0.001f, 0.1f, "%.3f");
+
+            float y = slope * sinf(viewValueX);
+            ImGui::Text("Current Value: (%.2f, %.2f)", viewValueX, y);
+        }
+
+        ImGui::Text("Graph Equation: y = %.2f * sin(x)", slope);
+
+        if (needUpdate)
+            UpdateGraph();
     }
 }
